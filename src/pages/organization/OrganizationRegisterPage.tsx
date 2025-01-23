@@ -5,6 +5,7 @@ import { Building2, ArrowLeft, Mail, Phone, MapPin, User, Lock, FileText } from 
 interface RegisterFormData {
   organizationName: string;
   organizationType: string;
+  customType?: string;
   registrationNumber: string;
   address: string;
   city: string;
@@ -38,6 +39,18 @@ export function OrganizationRegisterPage() {
     confirmPassword: '',
     acceptedTerms: false,
   });
+
+  const [showCustomType, setShowCustomType] = useState(false);
+
+  const handleOrganizationTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setShowCustomType(value === 'other');
+    setFormData({ 
+      ...formData, 
+      organizationType: value,
+      customType: value === 'other' ? formData.customType : ''
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,7 +103,7 @@ export function OrganizationRegisterPage() {
             <div className="space-y-6">
               <h3 className="text-lg font-medium text-gray-900">Organization Details</h3>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6">
                 <div>
                   <label htmlFor="organizationName" className="block text-sm font-medium text-gray-700">
                     Organization Name *
@@ -101,39 +114,45 @@ export function OrganizationRegisterPage() {
                     className="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2"
                     value={formData.organizationName}
                     onChange={(e) => setFormData({ ...formData, organizationName: e.target.value })}
+                    placeholder="Enter your organization's name"
                   />
                 </div>
 
                 <div>
                   <label htmlFor="organizationType" className="block text-sm font-medium text-gray-700">
-                    Organization Type *
+                    Organization Category *
                   </label>
                   <select
                     required
                     className="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2"
                     value={formData.organizationType}
-                    onChange={(e) => setFormData({ ...formData, organizationType: e.target.value })}
+                    onChange={handleOrganizationTypeChange}
                   >
-                    <option value="">Select type</option>
-                    <option value="educational">Educational Institution</option>
-                    <option value="corporate">Corporate Organization</option>
-                    <option value="non-profit">Non-Profit Organization</option>
-                    <option value="government">Government Institution</option>
+                    <option value="">Select category</option>
+                    <option value="educational">Educational (Career/ Courses/Certificates)</option>
+                    <option value="taxation">Taxation (Tax return/Forms/Benefits)</option>
+                    <option value="career">Career Growth (Resumes/Job Search/CV)</option>
+                    <option value="immigration">Immigration (Study/Work permits/PR)</option>
+                    <option value="other">Other (specify)</option>
                   </select>
                 </div>
 
-                <div>
-                  <label htmlFor="registrationNumber" className="block text-sm font-medium text-gray-700">
-                    Registration Number *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    className="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2"
-                    value={formData.registrationNumber}
-                    onChange={(e) => setFormData({ ...formData, registrationNumber: e.target.value })}
-                  />
-                </div>
+                {/* Custom Type Input */}
+                {showCustomType && (
+                  <div>
+                    <label htmlFor="customType" className="block text-sm font-medium text-gray-700">
+                      Specify Category *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      className="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2"
+                      value={formData.customType}
+                      onChange={(e) => setFormData({ ...formData, customType: e.target.value })}
+                      placeholder="Enter your organization category"
+                    />
+                  </div>
+                )}
               </div>
             </div>
 

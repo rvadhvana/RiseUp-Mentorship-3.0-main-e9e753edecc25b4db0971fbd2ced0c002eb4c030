@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, User, Mail, Phone, Briefcase, GraduationCap, FileText, Lock } from 'lucide-react';
+import { supabase } from '../../utils/supabase';
+import { useAuth } from '../../context/AuthContext';
 
 type UserRole = 'mentor' | 'mentee';
 
@@ -35,7 +37,13 @@ const EXPERTISE_OPTIONS = [
 export function UserRegisterPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { register } = useAuth();
   const role: UserRole = location.pathname.includes('mentor') ? 'mentor' : 'mentee';
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [notification, setNotification] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
 
   const [formData, setFormData] = useState<RegisterFormData>({
     firstName: '',
@@ -53,18 +61,48 @@ export function UserRegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
+    setIsSubmitting(true);
 
     try {
-      // Handle registration logic here
-      navigate(`/${role}/registration-success`);
-    } catch (err) {
-      setError('Failed to register. Please try again.');
+      if (!formData.email || !formData.password || !formData.firstName || !formData.lastName) {
+        throw new Error('Please fill in all required fields');
+      }
+
+      if (formData.password !== formData.confirmPassword) {
+        throw new Error('Passwords do not match');
+      }
+
+      await register(formData.email, formData.password, {
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        user_role: role,
+        phone: formData.phone,
+        expertise: role === 'mentor' ? formData.expertise : null,
+        years_experience: role === 'mentor' ? formData.experience : null,
+        job_title: role === 'mentor' ? formData.currentRole : null,
+        company: role === 'mentor' ? formData.company : null,
+        bio: role === 'mentor' ? formData.bio : null,
+        interests: role === 'mentee' ? formData.interests : null,
+        user_status: role === 'mentee' ? formData.currentStatus : null,
+        goals: role === 'mentee' ? formData.goals : null
+      });
+
+      setNotification({
+        type: 'success',
+        message: 'Registration successful! Please check your email to verify your account.'
+      });
+
+      // Redirect after a short delay
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
+    } catch (error) {
+      setNotification({
+        type: 'error',
+        message: error.message || 'Failed to register'
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -361,11 +399,14 @@ export function UserRegisterPage() {
             {/* Submit Button */}
             <button
               type="submit"
+              disabled={isSubmitting}
               className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white ${
                 role === 'mentor' ? 'bg-green-600 hover:bg-green-700' : 'bg-purple-600 hover:bg-purple-700'
-              } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-${role === 'mentor' ? 'green' : 'purple'}-500`}
+              } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-${role === 'mentor' ? 'green' : 'purple'}-500 ${
+                isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
             >
-              Register as {role === 'mentor' ? 'Mentor' : 'Mentee'}
+              {isSubmitting ? 'Registering...' : `Register as ${role === 'mentor' ? 'Mentor' : 'Mentee'}`}
             </button>
           </form>
         </div>

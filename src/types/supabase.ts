@@ -9,68 +9,118 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
-      profiles: {
+      organizations: {
         Row: {
           id: string
-          email: string
           name: string
-          role: 'admin' | 'mentor' | 'mentee'
+          type: string
+          address: string | null
+          city: string | null
+          state: string | null
+          country: string | null
+          postal_code: string | null
+          contact_email: string
+          contact_phone: string
           created_at: string
-          updated_at: string
         }
         Insert: {
           id: string
-          email: string
           name: string
-          role?: 'admin' | 'mentor' | 'mentee'
+          type: string
+          address?: string | null
+          city?: string | null
+          state?: string | null
+          country?: string | null
+          postal_code?: string | null
+          contact_email: string
+          contact_phone: string
           created_at?: string
-          updated_at?: string
         }
         Update: {
           id?: string
-          email?: string
           name?: string
-          role?: 'admin' | 'mentor' | 'mentee'
+          type?: string
+          address?: string | null
+          city?: string | null
+          state?: string | null
+          country?: string | null
+          postal_code?: string | null
+          contact_email?: string
+          contact_phone?: string
           created_at?: string
-          updated_at?: string
         }
       }
-      mentors: {
+      profiles: {
+        Row: {
+          id: string
+          first_name: string
+          last_name: string
+          email: string
+          phone: string
+          user_role: 'mentor' | 'mentee'
+          expertise: string[] | null
+          years_experience: string | null
+          job_title: string | null
+          company: string | null
+          bio: string | null
+          interests: string[] | null
+          user_status: string | null
+          goals: string | null
+          created_at: string
+        }
+        Insert: {
+          id: string
+          first_name: string
+          last_name: string
+          email: string
+          phone: string
+          user_role: 'mentor' | 'mentee'
+          expertise?: string[] | null
+          years_experience?: string | null
+          job_title?: string | null
+          company?: string | null
+          bio?: string | null
+          interests?: string[] | null
+          user_status?: string | null
+          goals?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          first_name?: string
+          last_name?: string
+          email?: string
+          phone?: string
+          user_role?: 'mentor' | 'mentee'
+          expertise?: string[] | null
+          years_experience?: string | null
+          job_title?: string | null
+          company?: string | null
+          bio?: string | null
+          interests?: string[] | null
+          user_status?: string | null
+          goals?: string | null
+          created_at?: string
+        }
+      }
+      success_stories: {
         Row: {
           id: string
           user_id: string
-          title: string
-          company: string
-          location: string
-          expertise: string[]
-          bio: string
-          image_url: string
+          story: string
           created_at: string
-          updated_at: string
         }
         Insert: {
           id?: string
           user_id: string
-          title: string
-          company: string
-          location: string
-          expertise: string[]
-          bio: string
-          image_url?: string
+          story: string
           created_at?: string
-          updated_at?: string
         }
         Update: {
           id?: string
           user_id?: string
-          title?: string
-          company?: string
-          location?: string
-          expertise?: string[]
-          bio?: string
-          image_url?: string
+          story?: string
           created_at?: string
-          updated_at?: string
         }
       }
     }

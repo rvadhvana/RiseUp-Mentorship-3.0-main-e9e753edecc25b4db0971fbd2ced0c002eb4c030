@@ -8,6 +8,9 @@ import {
   Send,
   Quote 
 } from 'lucide-react';
+import { supabase } from '../../utils/supabase';
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 interface Testimonial {
   id: string;
@@ -36,12 +39,33 @@ const TESTIMONIALS: Testimonial[] = [
 ];
 
 export function Footer() {
-  const handleSubmitStory = (e: React.FormEvent<HTMLFormElement>) => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  
+  const handleSubmitStory = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
     const formData = new FormData(e.currentTarget);
-    const story = formData.get('story');
-    console.log('Success story submitted:', story);
-    e.currentTarget.reset();
+    const story = formData.get('story') as string;
+    
+    try {
+      const { error } = await supabase
+        .from('success_stories')
+        .insert([{ user_id: user.id, story }]);
+        
+      if (error) throw error;
+      
+      alert('Story shared successfully!');
+      e.currentTarget.reset();
+    } catch (err) {
+      console.error('Error submitting story:', err);
+      alert('Failed to submit story. Please try again.');
+    }
   };
 
   return (

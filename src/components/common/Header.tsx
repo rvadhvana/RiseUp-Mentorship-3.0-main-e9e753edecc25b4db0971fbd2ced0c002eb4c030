@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
-import { Rocket } from 'lucide-react';
+import { Rocket, Building2, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { UserMenu } from './UserMenu';
+import { useAuth } from '../../context/AuthContext';
+import { supabase } from '../../utils/supabase';
 
 const MOTIVATIONAL_QUOTES = [
   {
@@ -23,7 +25,12 @@ const MOTIVATIONAL_QUOTES = [
 ];
 
 export function Header() {
+  const { user, profile } = useAuth();
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
+
+  const displayName = profile ? 
+    `${profile.first_name} ${profile.last_name}` : 
+    'Loading...';
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -35,8 +42,37 @@ export function Header() {
     return () => clearInterval(timer);
   }, []);
 
+  const fetchProfile = async () => {
+    // Try to fetch organization profile
+    let { data: org } = await supabase
+      .from('organizations')
+      .select('name')
+      .eq('id', user?.id)
+      .single();
+
+    if (org) {
+      return { name: org.name, type: 'organization' };
+    }
+
+    // If not organization, try to fetch user profile
+    let { data: userProfile } = await supabase
+      .from('profiles')
+      .select('first_name, last_name, user_role')
+      .eq('id', user?.id)
+      .single();
+
+    if (userProfile) {
+      return {
+        name: `${userProfile.first_name} ${userProfile.last_name}`,
+        type: userProfile.user_role
+      };
+    }
+
+    return null;
+  };
+
   return (
-    <header className="bg-white">
+    <header className="bg-white shadow-sm">
       {/* Quote Banner */}
       <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-1">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -55,17 +91,38 @@ export function Header() {
 
       {/* Main Header */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16 items-center">
-          <Link 
-            to="/" 
-            className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 transition-colors duration-200"
-          >
-            <Rocket className="h-8 w-8" />
-            <span className="font-bold text-xl">RiseUp Mentorship</span>
-          </Link>
+        <div className="flex justify-between h-16">
+          <div className="flex items-center">
+            <Link to="/" className="flex items-center space-x-2">
+              <Rocket className="h-8 w-8 text-blue-600" />
+              <span className="text-xl font-bold text-gray-900">RiseUp</span>
+            </Link>
+          </div>
 
-          {/* Add UserMenu */}
-          <UserMenu />
+          <div className="flex items-center space-x-4">
+            {user ? (
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center gap-2">
+                  {profile?.user_role === 'organization' ? (
+                    <Building2 className="h-5 w-5 text-gray-600" />
+                  ) : (
+                    <User className="h-5 w-5 text-gray-600" />
+                  )}
+                  <span className="text-sm font-medium text-gray-700">
+                    {profile?.first_name} {profile?.last_name}
+                  </span>
+                </div>
+                <UserMenu />
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                Sign In
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     </header>

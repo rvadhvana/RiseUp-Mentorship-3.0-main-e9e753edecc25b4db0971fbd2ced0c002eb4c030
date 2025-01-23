@@ -1,92 +1,77 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  UserCircle, 
-  Shield, 
-  ShieldCheck, 
-  GraduationCap, 
-  Users,
-  LogOut,
-  Settings,
-  User,
-  Star
-} from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-
-const ROLE_ICONS = {
-  super_admin: <ShieldCheck className="h-5 w-5" />,
-  admin: <Shield className="h-5 w-5" />,
-  mentor: <GraduationCap className="h-5 w-5" />,
-  mentee: <Users className="h-5 w-5" />,
-};
+import { 
+  User, 
+  Settings, 
+  LogOut, 
+  LayoutDashboard,
+  ChevronDown 
+} from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
 
 export function UserMenu() {
+  const { user, profile, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
-  const { isAuthenticated, logout, user } = useAuth();
-  const userRole = 'mentee'; // This will come from auth context later
+  const menuRef = useRef<HTMLDivElement>(null);
 
-  if (!isAuthenticated) {
-    return (
-      <Link
-        to="/login"
-        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-      >
-        Sign In
-        <UserCircle className="ml-2 h-5 w-5" />
-      </Link>
-    );
-  }
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  if (!user) return null;
 
   return (
-    <div className="relative">
+    <div className="relative" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-2 text-gray-700 hover:text-gray-900 focus:outline-none"
+        className="flex items-center space-x-1 text-gray-700 hover:text-gray-900 bg-gray-100 px-3 py-2 rounded-md"
       >
-        <div className="flex items-center">
-          <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center">
-            {ROLE_ICONS[user?.role || 'mentee']}
-          </div>
-          {user?.isExclusiveMember && (
-            <div className="ml-2 flex items-center text-yellow-500">
-              <Star className="h-4 w-4" />
-              <span className="text-xs font-medium ml-1">Exclusive</span>
-            </div>
-          )}
-        </div>
+        <User className="h-5 w-5" />
+        <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-          <div className="py-1" role="menu">
-            <Link
-              to="/profile"
-              className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-              role="menuitem"
-            >
-              <User className="mr-3 h-4 w-4" />
-              Profile
-            </Link>
-            <Link
-              to="/settings"
-              className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-              role="menuitem"
-            >
-              <Settings className="mr-3 h-4 w-4" />
-              Settings
-            </Link>
-            <button
-              onClick={() => {
-                logout();
-                setIsOpen(false);
-              }}
-              className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-              role="menuitem"
-            >
-              <LogOut className="mr-3 h-4 w-4" />
-              Sign out
-            </button>
+        <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 border border-gray-200">
+          <div className="px-4 py-2 border-b border-gray-200">
+            <p className="text-sm font-medium text-gray-900">{profile?.first_name} {profile?.last_name}</p>
+            <p className="text-xs text-gray-500">{profile?.email}</p>
           </div>
+          
+          <Link
+            to="/dashboard"
+            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            onClick={() => setIsOpen(false)}
+          >
+            <LayoutDashboard className="h-4 w-4 mr-2" />
+            Dashboard
+          </Link>
+          
+          <Link
+            to="/profile"
+            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            onClick={() => setIsOpen(false)}
+          >
+            <Settings className="h-4 w-4 mr-2" />
+            Profile Settings
+          </Link>
+          
+          <button
+            onClick={() => {
+              logout();
+              setIsOpen(false);
+            }}
+            className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+          >
+            <LogOut className="h-4 w-4 mr-2" />
+            Sign Out
+          </button>
         </div>
       )}
     </div>

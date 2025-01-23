@@ -164,6 +164,41 @@ export function HomePage() {
         </div>
       </div>
 
+      {/* Benefits Section */}
+      <div className="bg-gray-50 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h2 className="text-3xl font-extrabold text-gray-900">
+              Why Choose RiseUp Mentorship?
+            </h2>
+            <p className="mt-4 text-lg text-gray-600">
+              Discover the advantages of our mentorship program
+            </p>
+          </div>
+
+          <div className="mt-10">
+            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {BENEFITS.map((benefit, index) => (
+                <div
+                  key={index}
+                  className="relative bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                >
+                  <div className="w-12 h-12 rounded-md bg-blue-600 flex items-center justify-center mb-4">
+                    {benefit.icon}
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    {benefit.title}
+                  </h3>
+                  <p className="mt-2 text-gray-600">
+                    {benefit.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Featured Mentors Section */}
       <div className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -239,40 +274,7 @@ export function HomePage() {
         </div>
       </div>
 
-      {/* Benefits Section */}
-      <div className="bg-gray-50 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-extrabold text-gray-900">
-              Why Choose RiseUp Mentorship?
-            </h2>
-            <p className="mt-4 text-lg text-gray-600">
-              Discover the advantages of our mentorship program
-            </p>
-          </div>
-
-          <div className="mt-10">
-            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {BENEFITS.map((benefit, index) => (
-                <div
-                  key={index}
-                  className="relative bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow"
-                >
-                  <div className="w-12 h-12 rounded-md bg-blue-600 flex items-center justify-center mb-4">
-                    {benefit.icon}
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    {benefit.title}
-                  </h3>
-                  <p className="mt-2 text-gray-600">
-                    {benefit.description}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
+      
 
       {/* Thanks to the RiseUp Team */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">

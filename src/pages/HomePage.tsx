@@ -267,43 +267,106 @@ export function HomePage() {
         </div>
       </div>
 
-      {/* Exclusive Content Section */}
-      <div className="py-12 bg-white">
+      {/* Career Opportunities & Community Section */}
+      <div className="py-12 bg-gradient-to-b from-white to-blue-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <ExclusiveContent />
-        </div>
-      </div>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900">
+              Join Our Growing Community
+            </h2>
+            <p className="mt-4 text-lg text-gray-600">
+              Whether you're an organization looking to make an impact or a professional wanting to give back,
+              there's a place for you in the RiseUp community
+            </p>
+          </div>
 
-      
+          <div className="grid md:grid-cols-2 gap-8 mb-12">
+            {/* Organization Card */}
+            <div className="bg-white rounded-2xl shadow-lg p-8 border border-blue-100 hover:shadow-xl transition-all">
+              <div className="flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-6">
+                <Users className="h-8 w-8 text-blue-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                Partner Organizations
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Join RiseUp as a partner organization to access our talent pool, contribute to the tech community,
+                and build your employer brand.
+              </p>
+              <ul className="space-y-3 mb-8 text-gray-600">
+                <li className="flex items-center">
+                  <span className="mr-2">✓</span> Access to verified mentor profiles
+                </li>
+                <li className="flex items-center">
+                  <span className="mr-2">✓</span> Host exclusive events and workshops
+                </li>
+                <li className="flex items-center">
+                  <span className="mr-2">✓</span> Dedicated organization dashboard
+                </li>
+              </ul>
+              <Link
+                to="/organization/register"
+                className="inline-flex items-center justify-center w-full px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-all duration-200"
+              >
+                Register Organization
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+            </div>
 
-      {/* Thanks to the RiseUp Team */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-        <div className="bg-white rounded-2xl shadow-lg p-8 border border-blue-100">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Thanks to the RiseUp Team
-          </h2>
-          <p className="text-lg text-gray-600 mb-6">
-            Special thanks to our dedicated team who made this mentorship
-            platform possible. Together, we're building a community of growth
-            and learning.
-          </p>
-          <div className="flex justify-center space-x-4">
-            <Link
-              to="https://github.com/rvadhvana/RiseUp-Mentorship-3.0"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center px-6 py-3 border border-blue-600 text-base font-medium rounded-md text-blue-600 bg-white hover:bg-blue-50 transition-all duration-200"
-            >
-              <Star className="mr-2 h-5 w-5" />
-              Star on GitHub
-            </Link>
-            <Link
-              to="/mentors"
-              className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-all duration-200"
-            >
-              <Star className="mr-2 h-5 w-5" />
-              Get Started
-            </Link>
+            {/* Individual Mentor Card */}
+            <div className="bg-white rounded-2xl shadow-lg p-8 border border-blue-100 hover:shadow-xl transition-all">
+              <div className="flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-6">
+                <Star className="h-8 w-8 text-green-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                Become a Mentor
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Share your expertise, guide the next generation of tech professionals, and grow your
+                professional network.
+              </p>
+              <ul className="space-y-3 mb-8 text-gray-600">
+                <li className="flex items-center">
+                  <span className="mr-2">✓</span> Flexible mentoring schedule
+                </li>
+                <li className="flex items-center">
+                  <span className="mr-2">✓</span> Access to exclusive resources
+                </li>
+                <li className="flex items-center">
+                  <span className="mr-2">✓</span> Recognition and rewards program
+                </li>
+              </ul>
+              <Link
+                to="/mentor/apply"
+                className="inline-flex items-center justify-center w-full px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700 transition-all duration-200"
+              >
+                Apply as Mentor
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+            </div>
+          </div>
+
+          {/* Exclusive Content Integration */}
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 text-white">
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-bold mb-4">
+                Exclusive Resources & Content
+              </h3>
+              <p className="text-lg opacity-90">
+                Get access to premium resources, workshops, and networking opportunities
+                when you join our community
+              </p>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {['Workshops & Webinars', 'Industry Insights', 'Career Resources'].map((item) => (
+                <div key={item} className="bg-white/10 rounded-lg p-6 backdrop-blur-sm">
+                  <h4 className="font-semibold mb-2">{item}</h4>
+                  <p className="text-sm opacity-90">
+                    Access curated content and resources to accelerate your professional growth
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

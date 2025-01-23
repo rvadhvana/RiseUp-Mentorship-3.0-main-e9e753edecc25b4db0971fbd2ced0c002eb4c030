@@ -1,159 +1,104 @@
-import { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Mail, Lock, UserCircle, ArrowRight } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-
-const USER_ROLES = [
-  { id: 'super_admin', label: 'Super Admin' },
-  { id: 'admin', label: 'Admin' },
-  { id: 'mentor', label: 'Mentor' },
-  { id: 'mentee', label: 'Mentee' },
-] as const;
-
-type UserRole = typeof USER_ROLES[number]['id'];
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Building2, Users, GraduationCap, ArrowRight } from 'lucide-react';
 
 export function SignInPage() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { login } = useAuth();
-  const [error, setError] = useState('');
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    role: 'mentee' as UserRole,
-  });
-
-  const from = (location.state as any)?.from?.pathname || '/dashboard';
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    
-    try {
-      await login(formData.email, formData.password);
-      navigate(from, { replace: true });
-    } catch (err) {
-      setError('Failed to sign in. Please check your credentials.');
-    }
-  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full mx-auto space-y-8">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center">
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-            Welcome Back
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Sign in to continue your mentorship journey
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-gray-900">
+            Welcome to RiseUp
+          </h1>
+          <p className="mt-4 text-lg text-gray-600">
+            Choose how you'd like to join our community
           </p>
         </div>
 
-        {/* Form */}
-        <div className="bg-white py-8 px-10 shadow rounded-xl">
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            {/* Email */}
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email address
-              </label>
-              <div className="mt-1 relative">
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  className="appearance-none block w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                />
-                <Mail className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
-              </div>
+        {/* Sign In Cards */}
+        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          {/* Organization Card */}
+          <div className="bg-white rounded-2xl shadow-lg p-8 border border-blue-100 hover:shadow-xl transition-all">
+            <div className="flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-6 mx-auto">
+              <Building2 className="h-8 w-8 text-blue-600" />
             </div>
-
-            {/* Password */}
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
-              </label>
-              <div className="mt-1 relative">
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  className="appearance-none block w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                />
-                <Lock className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
-              </div>
-            </div>
-
-            {/* Role Selection */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Select your role
-              </label>
-              <div className="grid grid-cols-2 gap-4">
-                {USER_ROLES.map((role) => (
-                  <div
-                    key={role.id}
-                    className="relative flex items-center"
-                  >
-                    <input
-                      id={role.id}
-                      name="role"
-                      type="radio"
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                      checked={formData.role === role.id}
-                      onChange={() => setFormData({ ...formData, role: role.id })}
-                    />
-                    <label
-                      htmlFor={role.id}
-                      className="ml-2 block text-sm text-gray-700"
-                    >
-                      {role.label}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Forgot Password Link */}
-            <div className="text-right">
-              <Link
-                to="/forgot-password"
-                className="text-sm font-medium text-blue-600 hover:text-blue-500"
+            <h2 className="text-2xl font-bold text-center text-gray-900 mb-4">
+              Organization
+            </h2>
+            <p className="text-gray-600 text-center mb-8">
+              Partner with us to access talent and contribute to the tech community
+            </p>
+            <div className="space-y-4">
+              <button
+                onClick={() => navigate('/organization/register')}
+                className="w-full px-4 py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors flex items-center justify-center"
               >
-                Forgot your password?
-              </Link>
+                Join as new Organization
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </button>
+              <button
+                onClick={() => navigate('/organization/login')}
+                className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center"
+              >
+                Registered Organization
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </button>
             </div>
+          </div>
 
-            {/* Sign In Button */}
+          {/* Mentor Card */}
+          <div className="bg-white rounded-2xl shadow-lg p-8 border border-green-100 hover:shadow-xl transition-all">
+            <div className="flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-6 mx-auto">
+              <Users className="h-8 w-8 text-green-600" />
+            </div>
+            <h2 className="text-2xl font-bold text-center text-gray-900 mb-4">
+              Mentor
+            </h2>
+            <p className="text-gray-600 text-center mb-8">
+              Share your expertise and guide the next generation of tech professionals
+            </p>
             <button
-              type="submit"
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              onClick={() => navigate('/mentor/login')}
+              className="w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center"
             >
-              Sign in
+              Sign in as Mentor
               <ArrowRight className="ml-2 h-5 w-5" />
             </button>
-          </form>
+          </div>
+
+          {/* Mentee Card */}
+          <div className="bg-white rounded-2xl shadow-lg p-8 border border-purple-100 hover:shadow-xl transition-all">
+            <div className="flex items-center justify-center w-16 h-16 bg-purple-100 rounded-full mb-6 mx-auto">
+              <GraduationCap className="h-8 w-8 text-purple-600" />
+            </div>
+            <h2 className="text-2xl font-bold text-center text-gray-900 mb-4">
+              Mentee
+            </h2>
+            <p className="text-gray-600 text-center mb-8">
+              Connect with industry experts and accelerate your career growth
+            </p>
+            <button
+              onClick={() => navigate('/mentee/login')}
+              className="w-full px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center"
+            >
+              Sign in as Mentee
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </button>
+          </div>
         </div>
 
-        {/* Create Account Link */}
-        <div className="text-center">
-          <p className="text-sm text-gray-600">
-            Don't have an account?{' '}
+        {/* Additional Info */}
+        <div className="mt-12 text-center">
+          <p className="text-gray-600">
+            Need help?{' '}
             <Link
-              to="/signup"
-              className="font-medium text-blue-600 hover:text-blue-500 inline-flex items-center"
+              to="/contact"
+              className="text-blue-600 hover:text-blue-700 font-medium"
             >
-              Create new account
-              <UserCircle className="ml-1 h-5 w-5" />
+              Contact Support
             </Link>
           </p>
         </div>

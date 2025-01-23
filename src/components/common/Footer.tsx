@@ -116,10 +116,16 @@ export function Footer() {
 
             {/* Quick Links */}
             <div className="flex gap-6 text-sm">
-              <Link to="/mentors" className="text-gray-400 hover:text-white">
+              <Link 
+                to="/mentee/login"
+                className="text-gray-400 hover:text-white transition-colors duration-200"
+              >
                 Find Mentors
               </Link>
-              <Link to="/join" className="text-gray-400 hover:text-white">
+              <Link
+                to="/mentor/register"
+                className="text-gray-400 hover:text-white transition-colors duration-200"
+              >
                 Become a Mentor
               </Link>
               <Link to="/events" className="text-gray-400 hover:text-white">

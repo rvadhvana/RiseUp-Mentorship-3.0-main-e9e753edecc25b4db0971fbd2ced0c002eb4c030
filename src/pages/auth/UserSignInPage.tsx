@@ -1,22 +1,24 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Building2, ArrowLeft, User, Lock } from 'lucide-react';
+import { ArrowLeft, User, Lock, SwitchCamera } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
+type UserRole = 'mentor' | 'mentee';
+
 interface SignInFormData {
-  organizationName: string;
-  adminUsername: string;
+  username: string;
   password: string;
+  role: UserRole;
 }
 
-export function OrganizationSignInPage() {
+export function UserSignInPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [error, setError] = useState('');
   const [formData, setFormData] = useState<SignInFormData>({
-    organizationName: '',
-    adminUsername: '',
+    username: '',
     password: '',
+    role: 'mentee', // Default role
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -24,11 +26,22 @@ export function OrganizationSignInPage() {
     setError('');
     
     try {
-      await login(formData.adminUsername, formData.password);
-      navigate('/organization/dashboard');
+      await login(formData.username, formData.password, formData.role);
+      navigate(`/${formData.role}/dashboard`);
     } catch (err) {
       setError('Failed to sign in. Please check your credentials.');
     }
+  };
+
+  const toggleRole = () => {
+    setFormData(prev => ({
+      ...prev,
+      role: prev.role === 'mentor' ? 'mentee' : 'mentor'
+    }));
+  };
+
+  const getRoleColor = (role: UserRole) => {
+    return role === 'mentor' ? 'bg-green-600 hover:bg-green-700' : 'bg-purple-600 hover:bg-purple-700';
   };
 
   return (
@@ -47,55 +60,54 @@ export function OrganizationSignInPage() {
 
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4 mx-auto">
-            <Building2 className="h-8 w-8 text-blue-600" />
+          <div className={`flex items-center justify-center w-16 h-16 ${
+            formData.role === 'mentor' ? 'bg-green-100' : 'bg-purple-100'
+          } rounded-full mb-4 mx-auto transition-colors duration-300`}>
+            <User className={`h-8 w-8 ${
+              formData.role === 'mentor' ? 'text-green-600' : 'text-purple-600'
+            }`} />
           </div>
           <h2 className="text-3xl font-bold text-gray-900">
-            Center Admin Sign In
+            Sign In as {formData.role === 'mentor' ? 'Mentor' : 'Mentee'}
           </h2>
           <p className="mt-2 text-gray-600">
-            Access your organization's dashboard
+            {formData.role === 'mentor' 
+              ? 'Access your mentor dashboard and connect with mentees'
+              : 'Connect with mentors and access learning resources'}
           </p>
+        </div>
+
+        {/* Role Toggle */}
+        <div className="mb-8">
+          <button
+            onClick={toggleRole}
+            className="w-full flex items-center justify-center space-x-2 py-2 px-4 border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <SwitchCamera className="h-5 w-5 text-gray-600" />
+            <span className="text-gray-600">
+              Switch to {formData.role === 'mentor' ? 'Mentee' : 'Mentor'} Mode
+            </span>
+          </button>
         </div>
 
         {/* Form */}
         <div className="bg-white rounded-xl shadow-lg p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Organization Name Field */}
+            {/* Username Field */}
             <div>
-              <label htmlFor="organizationName" className="block text-sm font-medium text-gray-700">
-                Organization Name
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+                Username
               </label>
               <div className="mt-1 relative">
                 <input
-                  id="organizationName"
-                  name="organizationName"
+                  id="username"
+                  name="username"
                   type="text"
                   required
-                  className="appearance-none block w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Enter organization name"
-                  value={formData.organizationName}
-                  onChange={(e) => setFormData({ ...formData, organizationName: e.target.value })}
-                />
-                <Building2 className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
-              </div>
-            </div>
-
-            {/* Admin Username Field */}
-            <div>
-              <label htmlFor="adminUsername" className="block text-sm font-medium text-gray-700">
-                Admin Username
-              </label>
-              <div className="mt-1 relative">
-                <input
-                  id="adminUsername"
-                  name="adminUsername"
-                  type="text"
-                  required
-                  className="appearance-none block w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Enter admin username"
-                  value={formData.adminUsername}
-                  onChange={(e) => setFormData({ ...formData, adminUsername: e.target.value })}
+                  className="appearance-none block w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  placeholder="Enter your username"
+                  value={formData.username}
+                  onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                 />
                 <User className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
               </div>
@@ -112,7 +124,7 @@ export function OrganizationSignInPage() {
                   name="password"
                   type="password"
                   required
-                  className="appearance-none block w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="appearance-none block w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 />
@@ -130,9 +142,9 @@ export function OrganizationSignInPage() {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white ${getRoleColor(formData.role)} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-${formData.role === 'mentor' ? 'green' : 'purple'}-500 transition-colors`}
             >
-              Sign In to Dashboard
+              Sign In as {formData.role === 'mentor' ? 'Mentor' : 'Mentee'}
             </button>
           </form>
 
@@ -140,7 +152,7 @@ export function OrganizationSignInPage() {
           <div className="mt-6 space-y-4">
             <div className="text-center">
               <Link
-                to="/organization/forgot-password"
+                to={`/${formData.role}/forgot-password`}
                 className="text-sm font-medium text-blue-600 hover:text-blue-500"
               >
                 Forgot your password?
@@ -148,10 +160,10 @@ export function OrganizationSignInPage() {
             </div>
             <div className="text-center">
               <Link
-                to="/organization/register"
+                to={`/${formData.role}/register`}
                 className="text-sm font-medium text-blue-600 hover:text-blue-500"
               >
-                Register New Organization
+                New {formData.role}? Register here
               </Link>
             </div>
           </div>

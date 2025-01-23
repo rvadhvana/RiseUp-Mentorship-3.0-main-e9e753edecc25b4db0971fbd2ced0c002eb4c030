@@ -75,8 +75,8 @@ export function OrganizationRegisterPage() {
         {/* Back Button */}
         <div className="mb-8">
           <button
-            onClick={() => navigate('/signin')}
-            className="flex items-center text-blue-600 hover:text-blue-700"
+            onClick={() => navigate('/login')}
+            className="flex items-center text-blue-600 hover:text-blue-700 transition-colors duration-200"
           >
             <ArrowLeft className="h-5 w-5 mr-2" />
             Back to Sign In

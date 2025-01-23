@@ -10,6 +10,8 @@ import { AuthProvider } from './context/AuthContext'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
 import { OrganizationSignInPage } from './pages/organization/OrganizationSignInPage'
 import { OrganizationRegisterPage } from './pages/organization/OrganizationRegisterPage'
+import { UserSignInPage } from './pages/auth/UserSignInPage'
+import { UserRegisterPage } from './pages/auth/UserRegisterPage'
 
 function App() {
   return (
@@ -25,6 +27,10 @@ function App() {
             <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
             <Route path="/organization/login" element={<OrganizationSignInPage />} />
             <Route path="/organization/register" element={<OrganizationRegisterPage />} />
+            <Route path="/mentor/login" element={<UserSignInPage />} />
+            <Route path="/mentee/login" element={<UserSignInPage />} />
+            <Route path="/mentor/register" element={<UserRegisterPage />} />
+            <Route path="/mentee/register" element={<UserRegisterPage />} />
           </Routes>
         </main>
         <Footer />

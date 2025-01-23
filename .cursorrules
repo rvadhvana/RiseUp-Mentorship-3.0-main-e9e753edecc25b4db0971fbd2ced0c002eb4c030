@@ -1,0 +1,57 @@
+# General Code Style and Structure
+- Prefer functional and declarative programming patterns; avoid classes.
+- Use TypeScript for all code; prefer interfaces over types.
+- Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError).
+- Avoid unnecessary curly braces in conditional statements; use concise syntax for single-line conditionals.
+
+# React Native
+- Use functional components with TypeScript interfaces.
+- Wrap components with `Suspense` for lazy-loaded parts.
+- Minimize `useEffect` and `useState` in favor of server components.
+- Optimize images using lazy loading and WebP format.
+
+# Next.js
+- Rely on Next.js App Router for state management.
+- Prefer server-side rendering (SSR) and React Server Components.
+- Use `getStaticProps` and `getServerSideProps` for data fetching.
+- Implement dynamic imports for loading non-critical components.
+
+# Tailwind CSS
+- Utilize utility-first class names and a mobile-first design approach.
+- Customize themes/configurations via `tailwind.config.js`.
+
+# Shadcn UI
+- Employ Shadcn components for consistent UI/UX.
+- Implement responsive and accessible design using Shadcn UI principles.
+
+# Supabase
+- Follow best practices for database schema management using SQL scripts.
+- Utilize Supabase's real-time capabilities where needed.
+
+# REST API & GraphQL
+- Consolidate API operations using a single API layer with structured GraphQL queries/mutations.
+- Leverage Apollo Client for GraphQL caching and state management.
+- Validate API responses using Zod or similar runtime validation libraries.
+- Use REST conventions (e.g., proper HTTP method usage) for REST API endpoints.
+
+# Error Handling and Testing
+- Handle errors early; employ `try-catch` blocks for asynchronous operations.
+- Use Jest and Testing Library for unit and integration tests.
+- Implement API test suites using tools like Postman or Paw.
+
+# Performance and Optimization
+- Use compression and caching strategies for assets and data to improve performance.
+- Avoid excessive re-renders by utilizing `React.memo` and `useMemo` appropriately.
+- Prioritize Web Vitals (Largest Contentful Paint, Cumulative Layout Shift, First Input Delay) for performance.
+
+# Naming Conventions
+- Use lowercase with dashes for directory names (e.g., `components/auth-wizard`).
+- Favor named exports for modules and components.
+
+# Security
+- Sanitize all user inputs to prevent XSS and other injection attacks.
+- Safely manage environment variables and secrets with `process.env`.
+
+# Miscellaneous
+- Ensure all components are accessible, supporting keyboard navigation and ARIA roles where applicable.
+- Balance usage of Tailwind for quick styling and component frameworks like Shadcn for maintaining design consistency.

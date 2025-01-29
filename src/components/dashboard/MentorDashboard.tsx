@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, BookOpen, UserCircle } from 'lucide-react';
+import { Users, BookOpen, UserCircle, Calendar, CheckCircle } from 'lucide-react';
 import { TaskList } from '../mentorship/TaskList';
 import { ProgressTracker } from '../ProgressTracker';
 import { CalendarConnect } from '../CalendarConnect';
@@ -8,6 +8,7 @@ import { MentorPortfolio } from './MentorPortfolio';
 import { MenteeRequests } from './MenteeRequests';
 import { MenteeDetails } from './MenteeDetails';
 import type { User, ProgressUpdate } from '../../types';
+import { useAuth } from '../../context/AuthProvider'; // Adjust the import path as necessary
 
 // Mock data - In a real app, this would come from an API
 const MOCK_MENTEES: User[] = [
@@ -88,7 +89,8 @@ const MOCK_REQUESTS = [
 ];
 
 export function MentorDashboard() {
-  const [mentees] = useState(MOCK_MENTEES);
+  const { user } = useAuth();
+  const [mentees, setMentees] = useState(MOCK_MENTEES);
   const [updates] = useState(MOCK_UPDATES);
   const [activeTab, setActiveTab] = useState<'overview' | 'portfolio' | 'requests'>('overview');
   const [requests, setRequests] = useState(MOCK_REQUESTS);
@@ -107,33 +109,27 @@ export function MentorDashboard() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-start mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Mentor Dashboard</h1>
-            <p className="mt-2 text-gray-600">Track your mentees' progress and manage sessions</p>
-            <div className="mt-4 flex space-x-4">
-              <Link
-                to="/mentors" 
-                className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 transition-all duration-200 cursor-pointer"
-              >
-                <Users className="w-4 h-4 mr-2" />
-                Browse Mentors
-              </Link>
-            </div>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Mentor Dashboard</h1>
+          <div className="flex items-center">
+            <Calendar className="w-6 h-6 text-gray-400" />
+            <span className="ml-2 text-sm font-medium text-gray-900">{user?.name}</span>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center">
-              <UserCircle className="w-10 h-10 text-gray-400" />
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-900">{mentees[0]?.name}</p>
-                <p className="text-xs text-gray-500">Mentor</p>
-              </div>
-            </div>
-            <button className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-              <Users className="w-4 h-4 mr-2" />
-              {mentees.length} Active Mentees
-            </button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-lg font-medium text-gray-700">Your Mentees</h2>
+            <ul className="mt-4 space-y-2">
+              {mentees.map((mentee) => (
+                <li key={mentee.id} className="flex items-center justify-between">
+                  <span>{mentee.name}</span>
+                  <CheckCircle className="w-4 h-4 text-green-500" />
+                </li>
+              ))}
+            </ul>
           </div>
+          {/* Add more sections as needed */}
         </div>
 
         <div className="mb-6 border-b border-gray-200">

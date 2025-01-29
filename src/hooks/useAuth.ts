@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
+import { useAuth } from './AuthProvider'; // Adjust the import path as necessary
 
 export function useAuth() {
   const { setIsAuthenticated, setUser } = useAuthStore();
@@ -26,5 +27,25 @@ export function useAuth() {
     }
   }, [setIsAuthenticated, setUser]);
 
-  return { initAuth };
+  const signIn = async (credentials: { username: string; password: string }) => {
+    try {
+      const response = await fetch('/api/signin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentials),
+      });
+
+      if (response.ok) {
+        const { user } = await response.json();
+        setIsAuthenticated(true);
+        setUser(user); // Set the user information
+      } else {
+        console.error('Sign-in failed');
+      }
+    } catch (error) {
+      console.error('Error during sign-in:', error);
+    }
+  };
+
+  return { initAuth, signIn };
 }

@@ -1,9 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Building2, Users, GraduationCap, ArrowRight } from 'lucide-react';
+import { Building2, Users, GraduationCap, ArrowRight, Shield } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { SuperAdminLoginModal } from '../components/admin/SuperAdminLoginModal';
 
 export function SignInPage() {
   const navigate = useNavigate();
+  const { login } = useAuth();
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+
+  const handleSuperAdminLogin = async (email: string, password: string) => {
+    try {
+      if (email === 'superadmin@riseup.com' && password === '1234') {
+        await login(email, password);
+        setIsAdminModalOpen(false);
+        navigate('/admin/dashboard');
+      } else {
+        throw new Error('Invalid credentials');
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white py-12 px-4 sm:px-6 lg:px-8">
@@ -120,6 +138,24 @@ export function SignInPage() {
             </Link>
           </p>
         </div>
+
+        {/* Super Admin Access Button */}
+        <div className="mt-12 text-center">
+          <button
+            onClick={() => setIsAdminModalOpen(true)}
+            className="inline-flex items-center text-gray-500 hover:text-blue-600 transition-colors"
+          >
+            <Shield className="h-4 w-4 mr-1" />
+            <span className="text-sm">Admin Access</span>
+          </button>
+        </div>
+
+        {/* Super Admin Login Modal */}
+        <SuperAdminLoginModal
+          isOpen={isAdminModalOpen}
+          onClose={() => setIsAdminModalOpen(false)}
+          onLogin={handleSuperAdminLogin}
+        />
       </div>
     </div>
   );

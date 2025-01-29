@@ -103,7 +103,7 @@ const BENEFITS = [
   },
 ];
 
-export function HomePage() {
+const HomePage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
@@ -372,6 +372,8 @@ export function HomePage() {
       </div>
     </div>
   );
-}
+};
+
+export default HomePage;
 
 

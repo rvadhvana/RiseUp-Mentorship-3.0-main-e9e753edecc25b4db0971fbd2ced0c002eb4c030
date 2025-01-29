@@ -1,6 +1,7 @@
-import { useAuth } from '../context/AuthContext';
+import React from 'react';
+import { useAuth } from '../context/AuthProvider';
 
-export function DashboardPage() {
+const DashboardPage: React.FC = () => {
   const { profile } = useAuth();
 
   return (
@@ -58,7 +59,9 @@ export function DashboardPage() {
       </div>
     </div>
   );
-}
+};
+
+export default DashboardPage;
 
 interface DashboardCardProps {
   title: string;

@@ -36,14 +36,14 @@ export function SignInPage() {
                 onClick={() => navigate('/organization/register')}
                 className="w-full px-4 py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors flex items-center justify-center"
               >
-                Join as new Organization
+                Join as Organization
                 <ArrowRight className="ml-2 h-5 w-5" />
               </button>
               <button
                 onClick={() => navigate('/organization/login')}
                 className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center"
               >
-                Registered Organization
+                Sign in as Organization
                 <ArrowRight className="ml-2 h-5 w-5" />
               </button>
             </div>
@@ -58,15 +58,24 @@ export function SignInPage() {
               Mentor
             </h2>
             <p className="text-gray-600 text-center mb-8">
-              Share your expertise and guide the next generation of tech professionals
+              Share your expertise and guide the next generation
             </p>
-            <button
-              onClick={() => navigate('/mentor/login')}
-              className="w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center"
-            >
-              Sign in as Mentor
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </button>
+            <div className="space-y-4">
+              <button
+                onClick={() => navigate('/mentor/register')}
+                className="w-full px-4 py-3 border-2 border-green-600 text-green-600 rounded-lg hover:bg-green-50 transition-colors flex items-center justify-center"
+              >
+                Join as Mentor
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </button>
+              <button
+                onClick={() => navigate('/mentor/login')}
+                className="w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center"
+              >
+                Sign in as Mentor
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </button>
+            </div>
           </div>
 
           {/* Mentee Card */}
@@ -80,13 +89,22 @@ export function SignInPage() {
             <p className="text-gray-600 text-center mb-8">
               Connect with industry experts and accelerate your career growth
             </p>
-            <button
-              onClick={() => navigate('/mentee/login')}
-              className="w-full px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center"
-            >
-              Sign in as Mentee
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </button>
+            <div className="space-y-4">
+              <button
+                onClick={() => navigate('/mentee/register')}
+                className="w-full px-4 py-3 border-2 border-purple-600 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors flex items-center justify-center"
+              >
+                Join as Mentee
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </button>
+              <button
+                onClick={() => navigate('/mentee/login')}
+                className="w-full px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center"
+              >
+                Sign in as Mentee
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </button>
+            </div>
           </div>
         </div>
 

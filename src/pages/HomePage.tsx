@@ -154,7 +154,7 @@ export function HomePage() {
                 Find Your Mentor
               </Link>
               <Link
-                to="/join"
+                to="/login"
                 className="inline-flex items-center px-6 py-3 border-2 border-blue-600 text-base font-medium rounded-md text-blue-600 hover:bg-blue-50"
               >
                 Join as Mentor

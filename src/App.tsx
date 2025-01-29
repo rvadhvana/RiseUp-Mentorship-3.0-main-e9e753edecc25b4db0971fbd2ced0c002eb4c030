@@ -14,6 +14,7 @@ import { DashboardPage } from './pages/DashboardPage'
 import { RootLayout } from './components/layouts/RootLayout'
 import { MentorApplyPage } from './pages/mentor/MentorApplyPage'
 import { JoinPage } from './pages/JoinPage'
+import { MenteeDashboardPage } from './pages/mentee/MenteeDashboardPage'
 
 const router = createBrowserRouter([
   {
@@ -34,6 +35,7 @@ const router = createBrowserRouter([
       { path: 'mentor/register', element: <UserRegisterPage /> },
       { path: 'mentee/register', element: <UserRegisterPage /> },
       { path: 'mentor/apply', element: <ProtectedRoute><MentorApplyPage /></ProtectedRoute> },
+      { path: 'mentee/dashboard', element: <ProtectedRoute><MenteeDashboardPage /></ProtectedRoute> },
     ],
   },
 ], {

@@ -1,156 +1,123 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../utils/supabase';
-import { User } from '@supabase/supabase-js';
-import { Profile } from '../types/database';
+import type { User } from '@supabase/supabase-js';
+import type { Profile } from '../types/database';
+import { useNavigate } from 'react-router-dom';
 
 interface AuthContextType {
   user: User | null;
-  profile: Profile | null;
-  loading: boolean;
+  isAuthenticated: boolean;
+  isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  register: (email: string, password: string, userData: any) => Promise<void>;
-  refreshProfile: () => Promise<void>;
+  profile: Profile | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const fetchProfile = async (userId: string) => {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
-
-    if (error) {
-      console.error('Error fetching profile:', error);
-      return null;
-    }
-
-    return data;
-  };
-
-  const refreshProfile = async () => {
-    if (user) {
-      const profile = await fetchProfile(user.id);
-      setProfile(profile);
-    }
-  };
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const initAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        const profile = await fetchProfile(session.user.id);
-        setProfile(profile);
-      }
-      
-      setLoading(false);
-    };
+    let mounted = true;
 
-    initAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        const profile = await fetchProfile(session.user.id);
-        setProfile(profile);
-      } else {
-        setProfile(null);
+    // Initial session check
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (mounted) {
+        setUser(session?.user ?? null);
+        if (session?.user) {
+          fetchProfile(session.user.id);
+        }
+        setIsLoading(false);
       }
-      
-      setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (mounted) {
+        setUser(session?.user ?? null);
+        if (session?.user) {
+          await fetchProfile(session.user.id);
+        } else {
+          setProfile(null);
+        }
+        setIsLoading(false);
+      }
+    });
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
-  const login = async (email: string, password: string) => {
-    // Super admin check
-    if (email === 'superadmin@riseup.com' && password === '1234') {
-      // Set super admin session
-      const superAdminProfile = {
-        id: 'super-admin',
-        email: 'superadmin@riseup.com',
-        first_name: 'Super',
-        last_name: 'Admin',
-        user_role: 'admin'
-      };
-      setProfile(superAdminProfile);
-      return;
-    }
+  const fetchProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+      if (error) {
+        console.error('Error fetching profile:', error);
+        return;
+      }
 
-    if (error) throw error;
-
-    if (data.user) {
-      const profile = await fetchProfile(data.user.id);
-      setProfile(profile);
+      if (data) {
+        setProfile(data);
+      }
+    } catch (error) {
+      console.error('Error:', error);
     }
   };
 
-  const register = async (email: string, password: string, userData: any) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: userData,
-        emailRedirectTo: `${window.location.origin}/auth/callback`
-      }
-    });
-
-    if (error) throw error;
-
-    if (data.user) {
-      const profileData = {
-        id: data.user.id,
-        email: data.user.email,
-        first_name: userData.first_name,
-        last_name: userData.last_name,
-        user_role: userData.user_role,
-        ...userData
-      };
-
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert([profileData]);
-
-      if (profileError) throw profileError;
-
-      setProfile(profileData as Profile);
+  const login = async (email: string, password: string) => {
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error logging in:', error);
+      throw error;
     }
   };
 
   const logout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
-    setUser(null);
-    setProfile(null);
+    try {
+      setIsLoading(true);
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      // Clear user and profile state
+      setUser(null);
+      setProfile(null);
+      
+      // Navigate to login page
+      navigate('/login');
+    } catch (error) {
+      console.error('Error signing out:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      profile, 
-      loading, 
-      login, 
-      logout, 
-      register,
-      refreshProfile 
+    <AuthContext.Provider value={{
+      user,
+      isAuthenticated: !!user,
+      isLoading,
+      login,
+      logout,
+      profile,
     }}>
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 }

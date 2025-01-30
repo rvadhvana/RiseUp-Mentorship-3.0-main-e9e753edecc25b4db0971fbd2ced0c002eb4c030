@@ -17,38 +17,85 @@ import { MentorApplyPage } from './pages/mentor/MentorApplyPage';
 import { JoinPage } from './pages/JoinPage';
 import { MenteeDashboardPage } from './pages/mentee/MenteeDashboardPage';
 import { SuperAdminDashboard } from './pages/admin/SuperAdminDashboard';
+import { PremiumPlansPage } from './pages/PremiumPlansPage';
+import { PremiumContentPage } from './pages/PremiumContentPage';
+import { AuthCallbackPage } from './pages/auth/AuthCallbackPage';
+import { AuthGuard } from './components/auth/AuthGuard';
+import { ProfileSettings } from './components/profile/ProfileSettings';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 const App: React.FC = () => {
   return (
-    <AuthProvider>
-      <Routes>
-        <Route path="/" element={<RootLayout />}>
-          <Route index element={<HomePage />} />
-          <Route path="login" element={<SignInPage />} />
-          <Route path="signup" element={<SignUpPage />} />
-          <Route path="join" element={<JoinPage />} />
-          <Route path="dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-          <Route path="mentors" element={<ProtectedRoute><MentorsPage /></ProtectedRoute>} />
-          <Route path="profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-          <Route path="organization/login" element={<OrganizationSignInPage />} />
-          <Route path="organization/register" element={<OrganizationRegisterPage />} />
-          <Route path="mentor/login" element={<UserSignInPage />} />
-          <Route path="mentee/login" element={<UserSignInPage />} />
-          <Route path="mentor/register" element={<UserRegisterPage />} />
-          <Route path="mentee/register" element={<UserRegisterPage />} />
-          <Route path="mentor/apply" element={<ProtectedRoute><MentorApplyPage /></ProtectedRoute>} />
-          <Route path="mentee/dashboard" element={<ProtectedRoute><MenteeDashboardPage /></ProtectedRoute>} />
-          <Route 
-            path="/admin/dashboard" 
-            element={
-              <ProtectedRoute adminOnly>
-                <SuperAdminDashboard />
-              </ProtectedRoute>
-            } 
-          />
-        </Route>
-      </Routes>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<RootLayout />}>
+            <Route index element={<HomePage />} />
+            <Route
+              path="/login"
+              element={
+                <AuthGuard>
+                  <SignInPage />
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <AuthGuard>
+                  <SignUpPage />
+                </AuthGuard>
+              }
+            />
+            <Route path="join" element={<JoinPage />} />
+            <Route path="dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+            <Route
+              path="/mentors"
+              element={
+                <ProtectedRoute>
+                  <MentorsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+            <Route path="organization/login" element={<OrganizationSignInPage />} />
+            <Route path="organization/register" element={<OrganizationRegisterPage />} />
+            <Route path="mentor/login" element={<UserSignInPage />} />
+            <Route path="mentee/login" element={<UserSignInPage />} />
+            <Route path="mentor/register" element={<UserRegisterPage />} />
+            <Route path="mentee/register" element={<UserRegisterPage />} />
+            <Route path="mentor/apply" element={<ProtectedRoute><MentorApplyPage /></ProtectedRoute>} />
+            <Route path="mentee/dashboard" element={<ProtectedRoute><MenteeDashboardPage /></ProtectedRoute>} />
+            <Route 
+              path="/admin/dashboard" 
+              element={
+                <ProtectedRoute adminOnly>
+                  <SuperAdminDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route path="/premium-plans" element={<PremiumPlansPage />} />
+            <Route 
+              path="/premium-content" 
+              element={
+                <ProtectedRoute>
+                  <PremiumContentPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route path="/auth/callback" element={<AuthCallbackPage />} />
+            <Route
+              path="/settings/profile"
+              element={
+                <ProtectedRoute>
+                  <ProfileSettings />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
+        </Routes>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 };
 

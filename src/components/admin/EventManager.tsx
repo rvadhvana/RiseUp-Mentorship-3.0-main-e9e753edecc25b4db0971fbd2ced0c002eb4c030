@@ -5,11 +5,11 @@ import type { Event } from '../../types';
 const MOCK_EVENTS: Event[] = [
   {
     id: '1',
-    title: 'RiseUP Tech Conference 2024',
+    title: 'RiseUP Tech Conference 2025',
     description: 'Join us for an inspiring day of learning and networking with industry leaders.',
-    date: '2024-04-15',
+    date: '2025-02-20',
     lumaUrl: 'https://lu.ma/riseup-tech-2024',
-    registrationDeadline: '2024-04-01',
+    registrationDeadline: '2025-02-10',
     isActive: true
   }
 ];

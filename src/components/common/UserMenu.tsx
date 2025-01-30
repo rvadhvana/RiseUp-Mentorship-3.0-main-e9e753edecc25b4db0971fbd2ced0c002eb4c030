@@ -8,11 +8,27 @@ import {
   ChevronDown 
 } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Toast } from '../ui/Toast';
 
 export function UserMenu() {
   const { user, profile, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [showToast, setShowToast] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    try {
+      await logout();
+      setShowToast(true);
+      setIsOpen(false);
+      navigate('/login');
+    } catch (error) {
+      console.error('Error signing out:', error);
+      setShowToast(true);
+    }
+  };
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -63,16 +79,21 @@ export function UserMenu() {
           </Link>
           
           <button
-            onClick={() => {
-              logout();
-              setIsOpen(false);
-            }}
+            onClick={handleSignOut}
             className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50"
           >
             <LogOut className="h-4 w-4 mr-2" />
             Sign Out
           </button>
         </div>
+      )}
+
+      {showToast && (
+        <Toast
+          type="success"
+          message="Successfully signed out"
+          onClose={() => setShowToast(false)}
+        />
       )}
     </div>
   );

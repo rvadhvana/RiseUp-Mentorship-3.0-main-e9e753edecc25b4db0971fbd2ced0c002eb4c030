@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, User, Mail, Phone, Briefcase, GraduationCap, FileText, Lock } from 'lucide-react';
 import { supabase } from '../../utils/supabase';
 import { useAuth } from '../../context/AuthContext';
+import { EmailConfirmationModal } from '../../components/auth/EmailConfirmationModal';
 
 type UserRole = 'mentor' | 'mentee';
 
@@ -44,6 +45,7 @@ export function UserRegisterPage() {
     type: 'success' | 'error';
     message: string;
   } | null>(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   const [formData, setFormData] = useState<RegisterFormData>({
     firstName: '',
@@ -61,48 +63,31 @@ export function UserRegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    setError('');
 
     try {
-      if (!formData.email || !formData.password || !formData.firstName || !formData.lastName) {
-        throw new Error('Please fill in all required fields');
-      }
-
-      if (formData.password !== formData.confirmPassword) {
-        throw new Error('Passwords do not match');
-      }
-
-      await register(formData.email, formData.password, {
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-        user_role: role,
-        phone: formData.phone,
-        expertise: role === 'mentor' ? formData.expertise : null,
-        years_experience: role === 'mentor' ? formData.experience : null,
-        job_title: role === 'mentor' ? formData.currentRole : null,
-        company: role === 'mentor' ? formData.company : null,
-        bio: role === 'mentor' ? formData.bio : null,
-        interests: role === 'mentee' ? formData.interests : null,
-        user_status: role === 'mentee' ? formData.currentStatus : null,
-        goals: role === 'mentee' ? formData.goals : null
+      const { data, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+            role: role,
+            full_name: `${formData.firstName} ${formData.lastName}`
+          },
+          emailRedirectTo: `${window.location.origin}/auth/callback`
+        }
       });
 
-      setNotification({
-        type: 'success',
-        message: 'Registration successful! Please check your email to verify your account.'
-      });
+      if (error) throw error;
 
-      // Redirect after a short delay
-      setTimeout(() => {
-        navigate('/login');
-      }, 2000);
+      // Show confirmation modal
+      setShowConfirmation(true);
+      
     } catch (error) {
-      setNotification({
-        type: 'error',
-        message: error.message || 'Failed to register'
-      });
-    } finally {
-      setIsSubmitting(false);
+      console.error('Error:', error);
+      setError('Failed to create account');
     }
   };
 
@@ -411,6 +396,14 @@ export function UserRegisterPage() {
           </form>
         </div>
       </div>
+      <EmailConfirmationModal
+        isOpen={showConfirmation}
+        email={formData.email}
+        onClose={() => {
+          setShowConfirmation(false);
+          navigate('/login');
+        }}
+      />
     </div>
   );
 } 

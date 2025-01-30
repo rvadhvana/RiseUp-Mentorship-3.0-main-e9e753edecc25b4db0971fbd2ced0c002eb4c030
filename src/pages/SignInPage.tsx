@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Building2, Users, GraduationCap, ArrowRight, Shield } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -6,8 +6,36 @@ import { SuperAdminLoginModal } from '../components/admin/SuperAdminLoginModal';
 
 export function SignInPage() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/');
+    }
+  }, [isAuthenticated, navigate]);
+
+  // If user is authenticated, don't show sign-in options
+  if (isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50 to-white">
+        <div className="text-center">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+            You're already signed in!
+          </h2>
+          <p className="text-gray-600 mb-4">
+            Redirecting you to the homepage...
+          </p>
+          <Link
+            to="/"
+            className="text-blue-600 hover:text-blue-700 font-medium"
+          >
+            Go to Homepage
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const handleSuperAdminLogin = async (email: string, password: string) => {
     try {

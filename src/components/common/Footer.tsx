@@ -97,7 +97,7 @@ export function Footer() {
             {/* Social Links */}
             <div className="flex gap-3">
               <a
-                href="https://www.linkedin.com/company/riseup-mentorship"
+                href="https://www.linkedin.com/company/riseupetobicoke"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 bg-gray-800 rounded-full hover:bg-blue-600 transition-colors"
@@ -105,7 +105,7 @@ export function Footer() {
                 <Linkedin className="h-5 w-5" />
               </a>
               <a
-                href="https://www.youtube.com/@riseupmentorship"
+                href="https://www.youtube.com/@RiseUpEtobicoke"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 bg-gray-800 rounded-full hover:bg-red-600 transition-colors"
@@ -129,7 +129,7 @@ export function Footer() {
                 <Twitter className="h-5 w-5" />
               </a>
               <a
-                href="https://linktr.ee/riseup.mentorship"
+                href="http://linktr.ee/riseupetobicoke"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 bg-gray-800 rounded-full hover:bg-green-600 transition-colors"

@@ -11,11 +11,14 @@ import {
   Globe,
   Calendar,
   ArrowUpRight,
+  Crown,
+  Shield,
 } from 'lucide-react';
 import type { Event, Mentor } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { ExclusiveContent } from '../components/exclusive/ExclusiveContent';
 import { supabase } from '../utils/supabase';
+import { getMentorImageUrl } from '../utils/imageUtils';
 
 // Mock data for featured mentors
 const FEATURED_MENTORS: Mentor[] = [
@@ -28,8 +31,7 @@ const FEATURED_MENTORS: Mentor[] = [
     location: 'San Francisco, CA',
     expertise: ['Artificial Intelligence', 'Machine Learning', 'Neural Networks'],
     bio: 'Leading AI researcher with 15+ years of experience in developing cutting-edge machine learning solutions.',
-    imageUrl:
-      'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=800',
+    imageUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400',
     availableSlots: [
       {
         id: '1',
@@ -48,8 +50,7 @@ const FEATURED_MENTORS: Mentor[] = [
     location: 'New York, NY',
     expertise: ['Cloud Architecture', 'Microservices', 'DevOps'],
     bio: 'Cloud architecture expert specializing in scalable systems and microservices design.',
-    imageUrl:
-      'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=800',
+    imageUrl: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=400',
     availableSlots: [
       {
         id: '2',
@@ -64,12 +65,12 @@ const FEATURED_MENTORS: Mentor[] = [
 // Mock event
 const MOCK_EVENT: Event = {
   id: '1',
-  title: 'RiseUP Tech Conference 2024',
+  title: 'RiseUP Tech Conference 2025',
   description:
     'Join us for an inspiring day of learning and networking with industry leaders.',
-  date: '2024-04-15',
+  date: '2025-02-20',
   lumaUrl: 'https://lu.ma/riseup-tech-2024',
-  registrationDeadline: '2024-04-01',
+  registrationDeadline: '2025-02-10',
   isActive: true,
 };
 
@@ -111,12 +112,16 @@ export default function HomePage() {
   const [mentors, setMentors] = useState<Mentor[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+  const [isPremiumMember, setIsPremiumMember] = useState(false);
 
   useEffect(() => {
     fetchMentors();
     fetchEvents();
-  }, []);
+    if (user) {
+      checkPremiumStatus();
+    }
+  }, [user]);
 
   const fetchMentors = async () => {
     const { data, error } = await supabase
@@ -133,6 +138,7 @@ export default function HomePage() {
 
     setMentors(data.map(mentor => ({
       ...mentor,
+      imageUrl: getMentorImageUrl(mentor.image_url),
       availableSlots: mentor.mentor_slots
     })));
   };
@@ -150,6 +156,30 @@ export default function HomePage() {
     }
 
     setEvents(data);
+  };
+
+  const checkPremiumStatus = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('premium_members')
+        .select('*')
+        .eq('user_id', user?.id)
+        .eq('is_active', true)
+        .single();
+
+      if (error) throw error;
+      setIsPremiumMember(!!data);
+    } catch (error) {
+      console.error('Error checking premium status:', error);
+    }
+  };
+
+  const handlePremiumAccess = () => {
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+    navigate('/premium-content');
   };
 
   const filteredMentors = mentors.filter(mentor => 
@@ -265,72 +295,90 @@ export default function HomePage() {
       </div>
 
       {/* Featured Mentors Section */}
-      <div className="py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900">
+      <section className="py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
               Meet Our Expert Mentors
             </h2>
-            <p className="mt-4 text-lg text-gray-600">
-              Connect with industry leaders who can guide your career journey
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Learn from industry leaders who are passionate about sharing their knowledge and experience
             </p>
           </div>
 
-          {/* Search Mentors */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
-            <div className="w-full sm:w-96 relative">
-              <input
-                type="text"
-                placeholder="Search mentors by name or expertise..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-              />
-              <Search className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
-            </div>
-            {!isAuthenticated && (
-              <Link
-                to="/login"
-                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
-              >
-                Sign in to Connect
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            )}
-          </div>
-
-          {/* Mentor Cards */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {filteredMentors.map((mentor) => (
-              <div
-                key={mentor.id}
-                className="relative bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div className="w-12 h-12 rounded-md bg-blue-600 flex items-center justify-center mb-4">
-                  {/* Mentor icon would be rendered here */}
+          {/* Preview Grid */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            {filteredMentors.slice(0, 3).map((mentor) => (
+              <div key={mentor.id} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                <div className="aspect-w-16 aspect-h-9">
+                  <img
+                    src={mentor.imageUrl}
+                    alt={mentor.name}
+                    className="object-cover w-full h-48"
+                  />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900">
-                  {mentor.name}
-                </h3>
-                <p className="mt-2 text-gray-600">
-                  {mentor.title}
-                </p>
+                <div className="p-6">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    {mentor.name}
+                  </h3>
+                  <p className="text-gray-600 text-sm mb-3">
+                    {mentor.title} at {mentor.company}
+                  </p>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {mentor.expertise.slice(0, 2).map((skill) => (
+                      <span
+                        key={skill}
+                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                    {mentor.expertise.length > 2 && (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                        +{mentor.expertise.length - 2} more
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-gray-600 text-sm line-clamp-2 mb-4">
+                    {mentor.bio}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
 
-          {/* View All Mentors */}
-          <div className="text-center mt-8">
-            <Link
-              to={isAuthenticated ? '/mentors' : '/login'}
-              className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
-            >
-              View All Mentors
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Link>
+          {/* Call to Action */}
+          <div className="text-center">
+            {isAuthenticated ? (
+              <Link
+                to="/mentors"
+                className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all group"
+              >
+                View All Mentors
+                <ArrowUpRight className="ml-2 h-5 w-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+              </Link>
+            ) : (
+              <div className="space-y-4">
+                <div className="bg-blue-50 rounded-lg p-4 max-w-md mx-auto">
+                  <div className="flex items-center space-x-3 text-blue-700">
+                    <Shield className="h-5 w-5" />
+                    <p className="text-sm">
+                      Sign in to view our complete mentor directory and connect with experts
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => navigate('/login')}
+                  className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all"
+                >
+                  Sign In to View All
+                  <Users className="ml-2 h-5 w-5" />
+                </button>
+              </div>
+            )}
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Career Opportunities & Community Section */}
       <div className="py-12 bg-gradient-to-b from-white to-blue-50">
@@ -432,6 +480,16 @@ export default function HomePage() {
                 </div>
               ))}
             </div>
+          </div>
+
+          <div className="mt-8 text-center">
+            <button
+              onClick={handlePremiumAccess}
+              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+            >
+              <Crown className="h-5 w-5 mr-2" />
+              {isPremiumMember ? 'Access Premium Content' : 'Check Premium Eligibility'}
+            </button>
           </div>
         </div>
       </div>

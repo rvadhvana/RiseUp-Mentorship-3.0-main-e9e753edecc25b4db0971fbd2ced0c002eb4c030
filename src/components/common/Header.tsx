@@ -101,23 +101,11 @@ export function Header() {
 
           <div className="flex items-center space-x-4">
             {user ? (
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center gap-2">
-                  {profile?.user_role === 'organization' ? (
-                    <Building2 className="h-5 w-5 text-gray-600" />
-                  ) : (
-                    <User className="h-5 w-5 text-gray-600" />
-                  )}
-                  <span className="text-sm font-medium text-gray-700">
-                    {profile?.first_name} {profile?.last_name}
-                  </span>
-                </div>
-                <UserMenu />
-              </div>
+              <UserMenu />
             ) : (
               <Link
                 to="/login"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
               >
                 Sign In
               </Link>

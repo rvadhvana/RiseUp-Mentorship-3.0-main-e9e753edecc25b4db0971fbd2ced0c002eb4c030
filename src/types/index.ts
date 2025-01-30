@@ -13,7 +13,6 @@ export interface Mentor {
   name: string;
   title: string;
   company: string;
-  centreId: string;
   location: string;
   expertise: string[];
   bio: string;

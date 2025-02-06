@@ -23,6 +23,10 @@ import { AuthCallbackPage } from './pages/auth/AuthCallbackPage';
 import { AuthGuard } from './components/auth/AuthGuard';
 import { ProfileSettings } from './components/profile/ProfileSettings';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { MentorDashboardPage } from './pages/mentor/MentorDashboardPage';
+import AdminDashboard from './components/admin/AdminDashboard';
+import { ProfileView } from './pages/profile/ProfileView';
+import { OrganizationDashboard } from './pages/organization/OrganizationDashboard';
 
 const App: React.FC = () => {
   return (
@@ -66,22 +70,22 @@ const App: React.FC = () => {
             <Route path="mentee/register" element={<UserRegisterPage />} />
             <Route path="mentor/apply" element={<ProtectedRoute><MentorApplyPage /></ProtectedRoute>} />
             <Route path="mentee/dashboard" element={<ProtectedRoute><MenteeDashboardPage /></ProtectedRoute>} />
-            <Route 
-              path="/admin/dashboard" 
+            <Route
+              path="/admin/dashboard"
               element={
-                <ProtectedRoute adminOnly>
-                  <SuperAdminDashboard />
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <AdminDashboard />
                 </ProtectedRoute>
-              } 
+              }
             />
             <Route path="/premium-plans" element={<PremiumPlansPage />} />
-            <Route 
-              path="/premium-content" 
+            <Route
+              path="/premium-content"
               element={
                 <ProtectedRoute>
                   <PremiumContentPage />
                 </ProtectedRoute>
-              } 
+              }
             />
             <Route path="/auth/callback" element={<AuthCallbackPage />} />
             <Route
@@ -89,6 +93,32 @@ const App: React.FC = () => {
               element={
                 <ProtectedRoute>
                   <ProfileSettings />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/mentor/dashboard"
+              element={
+                <ProtectedRoute allowedRoles={['mentor']}>
+                  <MentorDashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/profile/view" element={<ProfileView />} />
+            <Route
+              path="/organization/dashboard"
+              element={
+                <ProtectedRoute allowedRoles={['organization']}>
+                  <OrganizationDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/organization/signin" element={<OrganizationSignInPage />} />
+            <Route
+              path="/super-admin/dashboard"
+              element={
+                <ProtectedRoute allowedRoles={['super_admin']}>
+                  <SuperAdminDashboard />
                 </ProtectedRoute>
               }
             />

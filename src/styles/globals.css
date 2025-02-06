@@ -1,0 +1,38 @@
+/* Reset default cursor */
+* {
+  cursor: default !important;
+}
+
+/* Add cursor pointer only to clickable elements */
+a:not([disabled]), 
+button:not([disabled]),
+select:not([disabled]),
+input[type="submit"]:not([disabled]),
+input[type="button"]:not([disabled]),
+input[type="reset"]:not([disabled]),
+[role="button"]:not([disabled]),
+.clickable:not([disabled]) {
+  cursor: pointer !important;
+}
+
+/* Add text cursor only when directly interacting with text input elements */
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+input[type="tel"]:focus,
+input[type="url"]:focus,
+textarea:focus {
+  cursor: text !important;
+}
+
+/* Prevent text selection on non-input elements */
+:not(input):not(textarea) {
+  user-select: none;
+}
+
+/* Allow text selection in specific elements */
+.selectable-text,
+p.mt-1.text-gray-900 {
+  user-select: text;
+} 

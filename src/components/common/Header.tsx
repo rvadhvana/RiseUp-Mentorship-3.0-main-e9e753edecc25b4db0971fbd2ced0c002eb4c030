@@ -27,7 +27,7 @@ const MOTIVATIONAL_QUOTES = [
 export function Header() {
   const { user, profile } = useAuth();
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
-
+console.log(user);
   const displayName = profile ? 
     `${profile.first_name} ${profile.last_name}` : 
     'Loading...';
@@ -100,6 +100,15 @@ export function Header() {
           </div>
 
           <div className="flex items-center space-x-4">
+            {user && profile?.user_role === 'mentor' && (
+              <Link
+                to="/mentor/dashboard"
+                className="text-gray-600 hover:text-gray-900"
+              >
+                Mentor Dashboard
+              </Link>
+            )}
+            
             {user ? (
               <UserMenu />
             ) : (

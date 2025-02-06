@@ -38,7 +38,7 @@ const EXPERTISE_OPTIONS = [
 export function UserRegisterPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { register } = useAuth();
+  useAuth();
   const role: UserRole = location.pathname.includes('mentor') ? 'mentor' : 'mentee';
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notification, setNotification] = useState<{
@@ -66,16 +66,17 @@ export function UserRegisterPage() {
     setError('');
 
     try {
+      debugger;
       const { data, error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
-          data: {
-            first_name: formData.firstName,
-            last_name: formData.lastName,
-            role: role,
-            full_name: `${formData.firstName} ${formData.lastName}`
-          },
+          // data: {
+          //   first_name: formData.firstName,
+          //   last_name: formData.lastName,
+          //   role: role,
+          //   full_name: `${formData.firstName} ${formData.lastName}`
+          // },
           emailRedirectTo: `${window.location.origin}/auth/callback`
         }
       });

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Building2, ArrowLeft, Mail, Phone, MapPin, User, Lock, FileText } from 'lucide-react';
+import { supabase } from '../../utils/supabase';
 
 interface RegisterFormData {
   organizationName: string;
@@ -18,6 +19,9 @@ interface RegisterFormData {
   adminPassword: string;
   confirmPassword: string;
   acceptedTerms: boolean;
+  name: string;
+  website: string;
+  description: string;
 }
 
 export function OrganizationRegisterPage() {
@@ -38,6 +42,9 @@ export function OrganizationRegisterPage() {
     adminPassword: '',
     confirmPassword: '',
     acceptedTerms: false,
+    name: '',
+    website: '',
+    description: '',
   });
 
   const [showCustomType, setShowCustomType] = useState(false);
@@ -52,7 +59,7 @@ export function OrganizationRegisterPage() {
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -62,10 +69,55 @@ export function OrganizationRegisterPage() {
     }
 
     try {
-      // Handle organization registration
-      navigate('/organization/registration-success');
-    } catch (err) {
-      setError('Failed to register organization. Please try again.');
+      // First create the user
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: formData.contactEmail,
+        password: formData.adminPassword,
+        options: {
+          data: {
+            organization_name: formData.organizationName,
+          }
+        }
+      });
+
+      if (authError) throw authError;
+      if (!authData.user) throw new Error('User creation failed');
+
+      // Then create organization
+      const { data: orgData, error: orgError } = await supabase
+        .from('organizations')
+        .insert([{ 
+          name: formData.organizationName, 
+          email: formData.contactEmail, 
+          phone: formData.contactPhone, 
+          website: formData.website, 
+          description: formData.description 
+        }])
+        .select()
+        .single();
+
+      if (orgError) throw orgError;
+
+      // Update profile with organization details
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .upsert([{
+          id: authData.user.id,
+          email: formData.contactEmail,
+          first_name: formData.organizationName,
+          organization_id: orgData.id,
+          user_role: 'organization',
+          is_org_admin: true
+        }]);
+
+      if (profileError) throw profileError;
+
+      // Show success message
+      alert('Registration successful! Please check your email to verify your account before logging in.');
+      navigate('/login');
+    } catch (error: any) {
+      console.error('Registration error:', error);
+      setError(error.message || 'An error occurred during registration');
     }
   };
 
@@ -98,7 +150,7 @@ export function OrganizationRegisterPage() {
 
         {/* Registration Form */}
         <div className="bg-white rounded-xl shadow-lg p-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleRegister} className="space-y-6">
             {/* Organization Details Section */}
             <div className="space-y-6">
               <h3 className="text-lg font-medium text-gray-900">Organization Details</h3>

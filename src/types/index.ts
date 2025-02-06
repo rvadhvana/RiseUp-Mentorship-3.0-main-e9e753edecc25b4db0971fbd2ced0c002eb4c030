@@ -44,3 +44,27 @@ export interface User {
     jobSeekingStatus?: any;
   };
 }
+
+export interface MentorProfile extends User {
+  expertise: string[];
+  center: string;
+  contact: {
+    phone: string;
+    linkedin: string;
+  };
+}
+
+export interface MenteeTask {
+  id: string;
+  title: string;
+  description: string;
+  dueDate: string;
+  status: 'pending' | 'completed';
+}
+
+export interface MenteeMeeting {
+  id: string;
+  date: string;
+  duration: string;
+  notes: string;
+}

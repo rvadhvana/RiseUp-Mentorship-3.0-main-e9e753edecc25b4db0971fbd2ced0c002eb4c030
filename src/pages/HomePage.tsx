@@ -16,9 +16,10 @@ import {
 } from 'lucide-react';
 import type { Event, Mentor } from '../types';
 import { useAuth } from '../context/AuthContext';
-import { ExclusiveContent } from '../components/exclusive/ExclusiveContent';
+//import { ExclusiveContent } from '../components/exclusive/ExclusiveContent';
 import { supabase } from '../utils/supabase';
 import { getMentorImageUrl } from '../utils/imageUtils';
+import { LoadingSpinner } from '../components/ui/LoadingSpinner';
 
 // Mock data for featured mentors
 const FEATURED_MENTORS: Mentor[] = [
@@ -27,7 +28,6 @@ const FEATURED_MENTORS: Mentor[] = [
     name: 'Dr. Sarah Chen',
     title: 'AI Research Director',
     company: 'TechCorp AI',
-    centreId: 'centre-1',
     location: 'San Francisco, CA',
     expertise: ['Artificial Intelligence', 'Machine Learning', 'Neural Networks'],
     bio: 'Leading AI researcher with 15+ years of experience in developing cutting-edge machine learning solutions.',
@@ -46,7 +46,6 @@ const FEATURED_MENTORS: Mentor[] = [
     name: 'James Wilson',
     title: 'Senior Software Architect',
     company: 'CloudScale Systems',
-    centreId: 'centre-1',
     location: 'New York, NY',
     expertise: ['Cloud Architecture', 'Microservices', 'DevOps'],
     bio: 'Cloud architecture expert specializing in scalable systems and microservices design.',
@@ -111,68 +110,90 @@ export default function HomePage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [mentors, setMentors] = useState<Mentor[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
   const [isPremiumMember, setIsPremiumMember] = useState(false);
+  const [isPremiumLoading, setIsPremiumLoading] = useState(true);
+  const [premiumError, setPremiumError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchMentors();
-    fetchEvents();
-    if (user) {
-      checkPremiumStatus();
-    }
-  }, [user]);
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
 
-  const fetchMentors = async () => {
-    const { data, error } = await supabase
-      .from('mentors')
-      .select(`
-        *,
-        mentor_slots (*)
-      `);
-    
-    if (error) {
-      console.error('Error fetching mentors:', error);
-      return;
-    }
+        // Fetch mentors
+        const { data: mentorsData, error: mentorsError } = await supabase
+          .from('mentor_profiles')
+          .select(`
+            *,
+            mentor_slots (*)
+          `)
+          .eq('mentor_status', 'active');
 
-    setMentors(data.map(mentor => ({
-      ...mentor,
-      imageUrl: getMentorImageUrl(mentor.image_url),
-      availableSlots: mentor.mentor_slots
-    })));
-  };
+        if (mentorsError) throw mentorsError;
+        if (mentorsData) setMentors(mentorsData);
 
-  const fetchEvents = async () => {
-    const { data, error } = await supabase
-      .from('events')
-      .select('*')
-      .eq('is_active', true)
-      .order('date', { ascending: true });
+        // Fetch events
+        const { data: eventsData, error: eventsError } = await supabase
+          .from('events')
+          .select('*')
+          .eq('is_active', true)
+          .order('date', { ascending: true });
 
-    if (error) {
-      console.error('Error fetching events:', error);
-      return;
-    }
+        if (eventsError) throw eventsError;
+        if (eventsData) setEvents(eventsData);
 
-    setEvents(data);
-  };
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setError('Failed to load content. Please try again later.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const checkPremiumStatus = async () => {
     try {
+      if (!user) return;
+      
       const { data, error } = await supabase
         .from('premium_members')
         .select('*')
-        .eq('user_id', user?.id)
+        .eq('user_id', user.id)
         .eq('is_active', true)
         .single();
 
-      if (error) throw error;
+      if (error) {
+        if (error.code === 'PGRST116') { // No rows returned
+          setIsPremiumMember(false);
+          return;
+        }
+        throw error;
+      }
+
       setIsPremiumMember(!!data);
     } catch (error) {
       console.error('Error checking premium status:', error);
+      setPremiumError('Failed to verify premium status');
+      setIsPremiumMember(false);
+    } finally {
+      setIsPremiumLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      checkPremiumStatus();
+    } else {
+      setIsPremiumMember(false);
+      setIsPremiumLoading(false);
+    }
+  }, [user]);
 
   const handlePremiumAccess = () => {
     if (!isAuthenticated) {
@@ -196,6 +217,8 @@ export default function HomePage() {
     }
     // Handle the action for authenticated users
   };
+
+  // if (isLoading) return <LoadingSpinner />;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">

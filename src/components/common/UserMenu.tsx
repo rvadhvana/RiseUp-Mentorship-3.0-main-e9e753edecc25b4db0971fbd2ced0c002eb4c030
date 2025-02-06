@@ -1,99 +1,109 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { 
-  User, 
-  Settings, 
-  LogOut, 
-  LayoutDashboard,
-  ChevronDown 
-} from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Toast } from '../ui/Toast';
+import { User, Settings, LogOut, UserCircle, LayoutDashboard } from 'lucide-react';
+import { useState } from 'react';
 
 export function UserMenu() {
   const { user, profile, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
-  const [showToast, setShowToast] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+
+  // if (!user || !profile) {
+  //   return null;
+  // }
+
+  // Get display name with proper fallbacks
+  const getDisplayName = () => {
+    if (profile?.first_name && profile?.last_name) {
+      return `${profile?.first_name} ${profile?.last_name}`;
+    }
+    if (profile?.first_name) {
+      return profile?.first_name;
+    }
+    // If no name is set, show "Profile Settings" to encourage users to set their name
+    return "Profile Settings";
+  };
+
+  // Simplified dashboard link based on role
+  const getDashboardLink = () => {
+    const role = profile?.user_role;
+    if (role === 'mentor') return '/mentor/dashboard';
+    if (role === 'mentee') return '/mentee/dashboard';
+    if (role === 'admin') return '/admin/dashboard';
+    return '/dashboard';
+  };
+
+  // Role-specific dashboard label
+  const getDashboardLabel = () => {
+    const role = profile?.user_role;
+    if (role === 'mentor') return 'Mentor Dashboard';
+    if (role === 'mentee') return 'Mentee Dashboard';
+    if (role === 'admin') return 'Admin Dashboard';
+    return 'Dashboard';
+  };
 
   const handleSignOut = async () => {
     try {
+      debugger;
+      localStorage.removeItem('sb-awkuwmmzwyemshrxamvu-auth-token');
       await logout();
-      setShowToast(true);
       setIsOpen(false);
-      navigate('/login');
+      navigate('/'); // Redirect to homepage after logout
     } catch (error) {
       console.error('Error signing out:', error);
-      setShowToast(true);
     }
   };
 
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    }
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  if (!user) return null;
-
   return (
-    <div className="relative" ref={menuRef}>
-      <button
+    <div className="relative">
+      <button 
+        className="flex items-center space-x-2 text-gray-700 hover:text-gray-900"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-1 text-gray-700 hover:text-gray-900 bg-gray-100 px-3 py-2 rounded-md"
       >
         <User className="h-5 w-5" />
-        <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <span className="font-medium">{getDisplayName()}</span>
       </button>
-
+      
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 border border-gray-200">
-          <div className="px-4 py-2 border-b border-gray-200">
-            <p className="text-sm font-medium text-gray-900">{profile?.first_name} {profile?.last_name}</p>
-            <p className="text-xs text-gray-500">{profile?.email}</p>
-          </div>
-          
+        <div 
+          className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50"
+          onMouseLeave={() => setIsOpen(false)}
+        >
           <Link
-            to="/dashboard"
-            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            to={getDashboardLink()}
+            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b border-gray-100"
             onClick={() => setIsOpen(false)}
           >
-            <LayoutDashboard className="h-4 w-4 mr-2" />
-            Dashboard
+            <LayoutDashboard className="inline-block h-4 w-4 mr-2" />
+            {getDashboardLabel()}
           </Link>
-          
+
           <Link
-            to="/profile"
-            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            to="/profile/view"
+            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
             onClick={() => setIsOpen(false)}
           >
-            <Settings className="h-4 w-4 mr-2" />
-            Profile Settings
+            <UserCircle className="inline-block h-4 w-4 mr-2" />
+            View Profile
+          </Link>
+
+          <Link
+            to="/settings/profile"
+            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b border-gray-100"
+            onClick={() => setIsOpen(false)}
+          >
+            <Settings className="inline-block h-4 w-4 mr-2" />
+            Settings
           </Link>
           
           <button
             onClick={handleSignOut}
-            className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+            className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
           >
-            <LogOut className="h-4 w-4 mr-2" />
+            <LogOut className="inline-block h-4 w-4 mr-2" />
             Sign Out
           </button>
         </div>
-      )}
-
-      {showToast && (
-        <Toast
-          type="success"
-          message="Successfully signed out"
-          onClose={() => setShowToast(false)}
-        />
       )}
     </div>
   );

@@ -1,26 +1,35 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { LoadingSpinner } from '../ui/LoadingSpinner';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  adminOnly?: boolean;
+  allowedRoles?: string[];
 }
 
-export function ProtectedRoute({ children, adminOnly = false }: ProtectedRouteProps) {
-  const { user, profile, loading } = useAuth();
+export function ProtectedRoute({ children, allowedRoles = [] }: ProtectedRouteProps) {
+  const { user, profile } = useAuth();
   const location = useLocation();
-
-  if (loading) {
-    return <LoadingSpinner />;
-  }
 
   if (!user) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (adminOnly && profile?.email !== 'superadmin@riseup.com') {
-    return <Navigate to="/dashboard" replace />;
+  // If roles are specified, check if user has permission
+  if (allowedRoles.length > 0 && profile) {
+    if (!allowedRoles.includes(profile.user_role)) {
+      // Redirect to appropriate dashboard based on role
+      const redirectPath = profile.user_role === 'mentor' 
+        ? '/mentor/dashboard'
+        : profile.user_role === 'mentee'
+        ? '/mentee/dashboard'
+        : profile.user_role === 'organization'
+        ? '/organization/dashboard'
+        : profile.user_role === 'admin'
+        ? '/admin/dashboard'
+        : '/dashboard';
+      
+      return <Navigate to={redirectPath} replace />;
+    }
   }
 
   return <>{children}</>;

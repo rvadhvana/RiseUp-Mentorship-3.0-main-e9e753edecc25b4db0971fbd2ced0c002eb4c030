@@ -42,6 +42,20 @@ export function SuperAdminDashboard() {
 
   useEffect(() => {
     fetchDashboardData();
+    // Subscribe to realtime updates
+    const subscription = supabase
+      .channel('table-db-changes')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+      }, () => {
+        fetchDashboardData();
+      })
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const fetchDashboardData = async () => {
@@ -62,7 +76,7 @@ export function SuperAdminDashboard() {
         .eq('user_role', 'mentee');
 
       const { data: pendingReqs } = await supabase
-        .from('requests')
+        .from('organization_approval_requests')
         .select('*')
         .eq('status', 'pending');
 
@@ -72,6 +86,14 @@ export function SuperAdminDashboard() {
         totalMentees: mentees?.length || 0,
         pendingRequests: pendingReqs?.length || 0
       });
+
+      // Log the activity
+      await supabase.from('super_admin_logs').insert({
+        action_type: 'FETCH_DASHBOARD_DATA',
+        action_description: 'Super admin fetched dashboard data',
+        performed_by: user?.id,
+        target_type: 'DASHBOARD'
+      });
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     }
@@ -80,13 +102,41 @@ export function SuperAdminDashboard() {
   const handleRequestAction = async (requestId: string, action: 'approve' | 'reject') => {
     try {
       const { error } = await supabase
-        .from('requests')
-        .update({ status: action === 'approve' ? 'approved' : 'rejected' })
+        .from('organization_approval_requests')
+        .update({ 
+          status: action === 'approve' ? 'approved' : 'rejected',
+          reviewed_by: user?.id,
+          updated_at: new Date().toISOString()
+        })
         .eq('id', requestId);
 
       if (error) throw error;
 
-      // Refresh requests
+      // Update organization status if approved
+      if (action === 'approve') {
+        const { data: request } = await supabase
+          .from('organization_approval_requests')
+          .select('organization_id')
+          .eq('id', requestId)
+          .single();
+
+        if (request?.organization_id) {
+          await supabase
+            .from('organizations')
+            .update({ is_approved: true })
+            .eq('id', request.organization_id);
+        }
+      }
+
+      // Log the action
+      await supabase.from('super_admin_logs').insert({
+        action_type: `REQUEST_${action.toUpperCase()}`,
+        action_description: `Super admin ${action}ed organization request`,
+        performed_by: user?.id,
+        target_type: 'ORGANIZATION_REQUEST'
+      });
+
+      // Refresh data
       fetchDashboardData();
     } catch (error) {
       console.error('Error handling request:', error);

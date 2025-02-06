@@ -1,8 +1,32 @@
-import React from 'react';
-import { useAuth } from '../context/AuthProvider';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const DashboardPage: React.FC = () => {
   const { profile } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (profile) {
+      switch (profile.user_role) {
+        case 'mentor':
+          navigate('/mentor/dashboard');
+          break;
+        case 'mentee':
+          navigate('/mentee/dashboard');
+          break;
+        case 'organization':
+          navigate('/organization/dashboard');
+          break;
+        case 'admin':
+          navigate('/admin/dashboard');
+          break;
+        default:
+          // Keep them on the default dashboard
+          break;
+      }
+    }
+  }, [profile, navigate]);
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
@@ -61,8 +85,6 @@ const DashboardPage: React.FC = () => {
   );
 };
 
-export default DashboardPage;
-
 interface DashboardCardProps {
   title: string;
   value: string;
@@ -77,4 +99,6 @@ function DashboardCard({ title, value, description }: DashboardCardProps) {
       <p className="text-sm text-gray-500 mt-1">{description}</p>
     </div>
   );
-} 
+}
+
+export default DashboardPage; 

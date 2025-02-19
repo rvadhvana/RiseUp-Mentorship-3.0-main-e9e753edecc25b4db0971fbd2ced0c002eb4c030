@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, User, Mail, Phone, Briefcase, GraduationCap, FileText, Lock } from 'lucide-react';
+import { ArrowLeft, User} from 'lucide-react';
 import { supabase } from '../../utils/supabase';
 import { useAuth } from '../../context/AuthContext';
 import { EmailConfirmationModal } from '../../components/auth/EmailConfirmationModal';
@@ -40,11 +40,11 @@ export function UserRegisterPage() {
   const location = useLocation();
   useAuth();
   const role: UserRole = location.pathname.includes('mentor') ? 'mentor' : 'mentee';
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [notification, setNotification] = useState<{
-    type: 'success' | 'error';
-    message: string;
-  } | null>(null);
+  const [isSubmitting] = useState(false);
+  // const [notification, setNotification] = useState<{
+  //   type: 'success' | 'error';
+  //   message: string;
+  // } | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   const [formData, setFormData] = useState<RegisterFormData>({
@@ -54,9 +54,13 @@ export function UserRegisterPage() {
     phone: '',
     password: '',
     confirmPassword: '',
+    currentRole: '',
+    company: '',
+    bio: '',
     expertise: [],
     interests: [],
     acceptedTerms: false
+
   });
 
   const [error, setError] = useState('');
@@ -66,23 +70,23 @@ export function UserRegisterPage() {
     setError('');
 
     try {
-      debugger;
+      console.log({formData,role});
+      const metadata = {
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+      }
       const { data, error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
-          // data: {
-          //   first_name: formData.firstName,
-          //   last_name: formData.lastName,
-          //   role: role,
-          //   full_name: `${formData.firstName} ${formData.lastName}`
-          // },
+          data: metadata,
           emailRedirectTo: `${window.location.origin}/auth/callback`
         }
       });
 
-      if (error) throw error;
 
+      if (error) throw error;
+      console.log({data, error});
       // Show confirmation modal
       setShowConfirmation(true);
       

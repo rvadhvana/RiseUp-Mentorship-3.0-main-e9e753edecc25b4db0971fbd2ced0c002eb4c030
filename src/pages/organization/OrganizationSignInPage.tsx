@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Building2, ArrowLeft, User, Lock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
-interface SignInFormData {
-  organizationName: string;
-  adminUsername: string;
-  password: string;
-}
+// interface SignInFormData {
+//   organizationName: string;
+//   adminUsername: string;
+//   password: string;
+// }
 
 export function OrganizationSignInPage() {
   const navigate = useNavigate();

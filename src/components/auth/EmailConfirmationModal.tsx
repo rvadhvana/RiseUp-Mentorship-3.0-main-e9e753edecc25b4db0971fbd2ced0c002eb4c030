@@ -1,4 +1,3 @@
-import React from 'react';
 import { Mail, X } from 'lucide-react';
 
 interface EmailConfirmationModalProps {

@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+//import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../utils/supabase';
 import { Crown, Calendar } from 'lucide-react';
 
 export function PremiumContentPage() {
   const { user } = useAuth();
-  const navigate = useNavigate();
+ // const navigate = useNavigate();
   const [isEligible, setIsEligible] = useState(false);
   const [attendanceCount, setAttendanceCount] = useState(0);
 

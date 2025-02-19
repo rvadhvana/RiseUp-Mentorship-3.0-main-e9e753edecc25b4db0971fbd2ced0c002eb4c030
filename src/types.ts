@@ -19,7 +19,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: 'super_admin' | 'admin' | 'mentor' | 'mentee';
+  role: 'admin' | 'mentor' | 'mentee';
   organization?: string;
   location?: string;
   eventAttendance: string[];

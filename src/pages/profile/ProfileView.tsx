@@ -1,11 +1,16 @@
 import { useAuth } from '../../context/AuthContext';
 
 export function ProfileView() {
-  const { profile } = useAuth();
+  const { user } = useAuth();
 
-  console.log(profile);
+  console.log({user});
 
-  if (!profile) return null;
+  // if (!profile) return null;
+
+  const firstName = user?.user_metadata?.first_name;
+  const lastName = user?.user_metadata?.last_name;
+  const email = user?.email;
+  const phone = user?.phone;
 
 
   return (
@@ -18,38 +23,38 @@ export function ProfileView() {
             <label className="block text-sm font-medium text-gray-700">
               First Name
             </label>
-            <p className="mt-1 text-gray-900">{profile.first_name || '-'}</p>
+            <p className="mt-1 text-gray-900">{firstName || '-'}</p>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Last Name
             </label>
-            <p className="mt-1 text-gray-900">{profile.last_name || '-'}</p>
+            <p className="mt-1 text-gray-900">{lastName || '-'}</p>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Email
             </label>
-            <p className="mt-1 text-gray-900">{profile.email}</p>
+            <p className="mt-1 text-gray-900">{email}</p>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Phone
             </label>
-            <p className="mt-1 text-gray-900">{profile.phone || '-'}</p>
+            <p className="mt-1 text-gray-900">{phone || '-'}</p>
           </div>
         </div>
 
-        <div>
+        {/* <div>
           <label className="block text-sm font-medium text-gray-700">
             Bio
           </label>
-          <p className="mt-1 text-gray-900">{profile.bio || '-'}</p>
-        </div>
-      </div>
+          <p className="mt-1 text-gray-900">{bio || '-'}</p>
+        </div>*/}
+      </div> 
     </div>
   );
 } 

@@ -1,12 +1,8 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { 
-  Users, 
-  Calendar, 
+import {  
   CheckCircle, 
   Target, 
-  Clock, 
-  Award,
   Plus,
   Star,
   Trophy
@@ -31,6 +27,7 @@ interface Achievement {
 }
 
 export function MenteeDashboardPage() {
+  debugger
   const { profile } = useAuth();
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [tasks, setTasks] = useState<MilestoneTask[]>([]);

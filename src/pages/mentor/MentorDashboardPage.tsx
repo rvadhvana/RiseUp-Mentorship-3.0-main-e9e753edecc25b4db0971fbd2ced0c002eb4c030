@@ -3,8 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { 
   User, 
   Users, 
-  Bell, 
-  Briefcase, 
+  Bell,  
   MapPin, 
   Mail, 
   Phone, 
@@ -58,9 +57,9 @@ interface MenteeRequest {
 }
 
 export function MentorDashboardPage() {
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<TabType>('profile');
-  const [expertise, setExpertise] = useState<Expertise[]>([
+  const [expertise ] = useState<Expertise[]>([
     { id: '1', name: 'Web Development' },
     { id: '2', name: 'Cloud Architecture' },
     { id: '3', name: 'DevOps' },

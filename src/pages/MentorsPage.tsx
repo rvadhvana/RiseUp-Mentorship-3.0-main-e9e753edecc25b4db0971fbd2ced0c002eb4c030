@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Search, Filter } from 'lucide-react';
 import { MOCK_MENTORS } from '../data/mockData';
-import type { Mentor } from '../types';
+//import type { Mentor } from '../types';
 
 export function MentorsPage() {
   const [searchTerm, setSearchTerm] = useState('');

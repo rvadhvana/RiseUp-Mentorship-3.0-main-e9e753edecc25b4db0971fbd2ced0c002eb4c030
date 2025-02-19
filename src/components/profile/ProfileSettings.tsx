@@ -6,7 +6,7 @@ import { supabase } from '../../utils/supabase';
 interface Profile {
   first_name: string;
   last_name: string;
-  phone: string;
+  phone: number;
   address: string;
   city: string;
   country: string;
@@ -22,7 +22,7 @@ export function ProfileSettings() {
   const [profile, setProfile] = useState<Profile>({
     first_name: '',
     last_name: '',
-    phone: '',
+    phone: 0,
     address: '',
     city: '',
     country: '',

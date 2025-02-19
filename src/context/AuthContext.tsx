@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../utils/supabase';
 import type { User } from '@supabase/supabase-js';
-import type { Profile } from '../types/database';
+import type { Profile } from '../types/supabase';
 
 interface AuthContextType {
   user: User | null;
@@ -15,45 +15,45 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
+  //const [profile, setProfile] = useState<Profile | null>(null);
 
   const fetchProfile = async (userId: string) => {
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('profiles')
-        .select('*')
+        .select('name')
         .eq('id', userId)
-        .single();
-
-      if (error) {
-        if (error.code === 'PGRST116') {
-          const email = user?.email || '';
-          const firstName = email.split('@')[0] || '';
-          const formattedName = firstName.charAt(0).toUpperCase() + firstName.slice(1);
+        .single();      
+      if (error) console.error(error);
+      //  {
+      //   throw error;
+      //   // if (error.code === 'PGRST116') {
+        //   const email = user?.email || '';
+        //   const firstName = email.split('@')[0] || '';
+        //   const formattedName = firstName.charAt(0).toUpperCase() + firstName.slice(1);
           
-          const { data: newProfile, error: createError } = await supabase
-            .from('profiles')
-            .upsert([
-              {
-                id: userId,
-                email: email,
-                first_name: formattedName,
-                last_name: '',
-                user_role: 'mentee',
-                updated_at: new Date().toISOString()
-              }
-            ])
-            .select()
-            .single();
+        //   const { data: newProfile, error: createError } = await supabase
+        //     .from('profiles')
+        //     .upsert([
+        //       {
+        //         id: userId,
+        //         email: email,
+        //         first_name: formattedName,
+        //         last_name: '',
+        //         user_role: 'mentee',
+        //         updated_at: new Date().toISOString()
+        //       }
+        //     ])
+        //     .select()
+        //     .single();
 
-          if (createError) throw createError;
-          setProfile(newProfile);
-          return;
-        }
-        throw error;
-      }
+        //   if (createError) throw createError;
+        //   setProfile(newProfile);
+        //   return;
+        //}
+       
+       // setProfile(data as Profile);
 
-      setProfile(data);
     } catch (error) {
       console.error('Error fetching profile:', error);
     }
@@ -74,16 +74,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      async (session: any) => {
         if (mounted) {
           const newUser = session?.user ?? null;
           setUser(newUser);
           
+
           if (newUser) {
             await fetchProfile(newUser.id);
           } else {
-            setProfile(null);
-          }
+         //   setProfile(null);
+          } 
         }
       }
     );
@@ -105,7 +106,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!authData.user) throw new Error('Login failed');
 
       // Fetch user profile
-      const { data: profileData, error: profileError } = await supabase
+      const { error: profileError } = await supabase
         .from('profiles')
         .select('*, organizations(*)')
         .eq('id', authData.user.id)
@@ -114,7 +115,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (profileError) {
         if (profileError.code === 'PGRST116') {
           // Profile doesn't exist, create one
-          const { data: newProfile, error: createError } = await supabase
+          const { error: createError } = await supabase
             .from('profiles')
             .upsert([{
               id: authData.user.id,
@@ -125,12 +126,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             .single();
 
           if (createError) throw createError;
-          setProfile(newProfile);
+          //setProfile(newProfile);
         } else {
           throw profileError;
         }
       } else {
-        setProfile(profileData);
+        //setProfile(profileData);
       }
     } catch (error) {
       console.error('Error logging in:', error);
@@ -144,7 +145,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       setUser(null);
-      setProfile(null);
+      //setProfile(null);
+
     } catch (error) {
       console.error('Error signing out:', error);
       throw error;
@@ -155,7 +157,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
-        profile,
+        //profile,
         isAuthenticated: !!user,
         login,
         logout,

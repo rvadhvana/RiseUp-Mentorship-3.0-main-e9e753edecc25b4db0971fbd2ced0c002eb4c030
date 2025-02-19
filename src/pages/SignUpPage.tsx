@@ -4,7 +4,6 @@ import { Mail, Lock, UserCircle, Building, MapPin, ArrowRight } from 'lucide-rea
 import { useAuth } from '../context/AuthContext';
 
 const USER_ROLES = [
-  { id: 'super_admin', label: 'Super Admin' },
   { id: 'admin', label: 'Admin' },
   { id: 'mentor', label: 'Mentor' },
   { id: 'mentee', label: 'Mentee' },

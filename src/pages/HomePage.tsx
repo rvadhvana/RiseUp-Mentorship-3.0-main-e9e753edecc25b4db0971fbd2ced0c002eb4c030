@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Target,
@@ -6,7 +6,6 @@ import {
   BookOpen,
   Star,
   ArrowRight,
-  Search,
   Calculator,
   Globe,
   Calendar,
@@ -16,55 +15,12 @@ import {
 } from 'lucide-react';
 import type { Event, Mentor } from '../types';
 import { useAuth } from '../context/AuthContext';
-//import { ExclusiveContent } from '../components/exclusive/ExclusiveContent';
 import { supabase } from '../utils/supabase';
-import { getMentorImageUrl } from '../utils/imageUtils';
-import { LoadingSpinner } from '../components/ui/LoadingSpinner';
-
-// Mock data for featured mentors
-const FEATURED_MENTORS: Mentor[] = [
-  {
-    id: '1',
-    name: 'Dr. Sarah Chen',
-    title: 'AI Research Director',
-    company: 'TechCorp AI',
-    location: 'San Francisco, CA',
-    expertise: ['Artificial Intelligence', 'Machine Learning', 'Neural Networks'],
-    bio: 'Leading AI researcher with 15+ years of experience in developing cutting-edge machine learning solutions.',
-    imageUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400',
-    availableSlots: [
-      {
-        id: '1',
-        startTime: '2024-03-20T10:00:00Z',
-        endTime: '2024-03-20T11:00:00Z',
-        isBooked: false,
-      },
-    ],
-  },
-  {
-    id: '2',
-    name: 'James Wilson',
-    title: 'Senior Software Architect',
-    company: 'CloudScale Systems',
-    location: 'New York, NY',
-    expertise: ['Cloud Architecture', 'Microservices', 'DevOps'],
-    bio: 'Cloud architecture expert specializing in scalable systems and microservices design.',
-    imageUrl: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=400',
-    availableSlots: [
-      {
-        id: '2',
-        startTime: '2024-03-21T14:00:00Z',
-        endTime: '2024-03-21T15:00:00Z',
-        isBooked: false,
-      },
-    ],
-  },
-];
 
 // Mock event
 const MOCK_EVENT: Event = {
   id: '1',
-  title: 'RiseUP Tech Conference 2025',
+  title:'RiseUP Tech Conference 2025',
   description:
     'Join us for an inspiring day of learning and networking with industry leaders.',
   date: '2025-02-20',
@@ -106,17 +62,17 @@ const BENEFITS = [
   },
 ];
 
-export default function HomePage() {
-  const [searchTerm, setSearchTerm] = useState('');
+export function HomePage() {
+  const [searchTerm] = useState('');
   const [mentors, setMentors] = useState<Mentor[]>([]);
-  const [events, setEvents] = useState<Event[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [, setEvents] = useState<Event[]>([]);
+  const [, setIsLoading] = useState(true);
+  const [, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
   const [isPremiumMember, setIsPremiumMember] = useState(false);
-  const [isPremiumLoading, setIsPremiumLoading] = useState(true);
-  const [premiumError, setPremiumError] = useState<string | null>(null);
+  const [, setIsPremiumLoading] = useState(true);
+  const [, setPremiumError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -209,17 +165,7 @@ export default function HomePage() {
       skill.toLowerCase().includes(searchTerm.toLowerCase())
     )
   );
-
-  const handleProtectedAction = () => {
-    if (!isAuthenticated) {
-      navigate('/login');
-      return;
-    }
-    // Handle the action for authenticated users
-  };
-
   // if (isLoading) return <LoadingSpinner />;
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
       {/* Event Banner */}

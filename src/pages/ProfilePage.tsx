@@ -6,10 +6,10 @@ export function ProfilePage() {
   const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    fullName: user?.name || '',
+    fullName: User?.name || '',
     email: user?.email || '',
-    organization: user?.organization || '',
-    location: user?.location || '',
+    //organization: User?.organization || '',
+    //location: User?.location || '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -73,14 +73,14 @@ export function ProfilePage() {
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <Building className="h-5 w-5 text-gray-400" />
                     </div>
-                    <input
+                    {/* <input
                       type="text"
                       name="organization"
                       id="organization"
-                      value={formData.organization}
+                      //value={formData.organization}
                       onChange={(e) => setFormData({ ...formData, organization: e.target.value })}
                       className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
-                    />
+                    /> */}
                   </div>
                 </div>
 
@@ -92,14 +92,14 @@ export function ProfilePage() {
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <MapPin className="h-5 w-5 text-gray-400" />
                     </div>
-                    <input
+                    {/* <input
                       type="text"
                       name="location"
                       id="location"
                       value={formData.location}
                       onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                       className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
-                    />
+                    /> */}
                   </div>
                 </div>
 
@@ -138,12 +138,12 @@ export function ProfilePage() {
                   <div className="flex items-center">
                     <Building className="h-5 w-5 text-gray-400 mr-2" />
                     <dt className="text-sm font-medium text-gray-500 w-32">Organization:</dt>
-                    <dd className="text-sm text-gray-900">{formData.organization}</dd>
+                    {/* <dd className="text-sm text-gray-900">{formData.organization}</dd> */}
                   </div>
                   <div className="flex items-center">
                     <MapPin className="h-5 w-5 text-gray-400 mr-2" />
                     <dt className="text-sm font-medium text-gray-500 w-32">Location:</dt>
-                    <dd className="text-sm text-gray-900">{formData.location}</dd>
+                    {/* <dd className="text-sm text-gray-900">{formData.location}</dd> */}
                   </div>
                 </dl>
               </div>

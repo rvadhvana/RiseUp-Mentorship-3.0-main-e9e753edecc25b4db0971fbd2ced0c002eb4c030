@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, User, Lock, SwitchCamera, GraduationCap } from 'lucide-react';
+import { ArrowLeft, User, SwitchCamera, GraduationCap } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { Toast } from '../../components/ui/Toast';
+import { ForgotPasswordForm } from '../../components/auth/ForgotPasswordForm';
 
 type UserRole = 'mentor' | 'mentee';
 
@@ -18,6 +19,7 @@ export function UserSignInPage() {
   const { login } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   // Determine initial role from URL path
   const initialRole: UserRole = location.pathname.includes('mentor') ? 'mentor' : 'mentee';
@@ -149,6 +151,19 @@ export function UserSignInPage() {
               </div>
             </div>
 
+            <div className="flex justify-between items-center mt-2">
+              <div className="flex items-center">
+                {/* Your existing remember me checkbox if any */}
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowForgotPassword(true)}
+                className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+              >
+                Forgot Password?
+              </button>
+            </div>
+
             <button
               type="submit"
               disabled={isSubmitting}
@@ -164,8 +179,9 @@ export function UserSignInPage() {
           <div className="mt-6 space-y-4">
             <div className="text-center">
               <Link
-                to={`/${formData.role}/forgot-password`}
+                to={`/${formData.role}/ResetPasswordpage`}
                 className="text-sm font-medium text-blue-600 hover:text-blue-500"
+
               >
                 Forgot your password?
               </Link>
@@ -189,6 +205,10 @@ export function UserSignInPage() {
           message={toast.message}
           onClose={() => setToast(null)}
         />
+      )}
+
+      {showForgotPassword && (
+        <ForgotPasswordForm onClose={() => setShowForgotPassword(false)} />
       )}
     </div>
   );

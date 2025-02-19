@@ -18,14 +18,10 @@ export function ProtectedRoute({ children, allowedRoles = [] }: ProtectedRoutePr
   if (allowedRoles.length > 0 && profile) {
     if (!allowedRoles.includes(profile.user_role)) {
       // Redirect to appropriate dashboard based on role
-      const redirectPath = profile.user_role === 'mentor' 
-        ? '/mentor/dashboard'
+      const redirectPath = profile.user_role === 'organization'
+        ? '/organization/dashboard'
         : profile.user_role === 'mentee'
         ? '/mentee/dashboard'
-        : profile.user_role === 'organization'
-        ? '/organization/dashboard'
-        : profile.user_role === 'admin'
-        ? '/admin/dashboard'
         : '/dashboard';
       
       return <Navigate to={redirectPath} replace />;

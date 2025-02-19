@@ -4,7 +4,7 @@ import { User, Settings, LogOut, UserCircle, LayoutDashboard } from 'lucide-reac
 import { useState } from 'react';
 
 export function UserMenu() {
-  const { user, profile, logout } = useAuth();
+  const { profile, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -27,24 +27,21 @@ export function UserMenu() {
   // Simplified dashboard link based on role
   const getDashboardLink = () => {
     const role = profile?.user_role;
-    if (role === 'mentor') return '/mentor/dashboard';
+    if (role === 'organization') return '/organization/dashboard';
     if (role === 'mentee') return '/mentee/dashboard';
-    if (role === 'admin') return '/admin/dashboard';
     return '/dashboard';
   };
 
   // Role-specific dashboard label
   const getDashboardLabel = () => {
     const role = profile?.user_role;
-    if (role === 'mentor') return 'Mentor Dashboard';
+    if (role === 'organization') return 'Organization Dashboard';
     if (role === 'mentee') return 'Mentee Dashboard';
-    if (role === 'admin') return 'Admin Dashboard';
     return 'Dashboard';
   };
 
   const handleSignOut = async () => {
     try {
-      debugger;
       localStorage.removeItem('sb-awkuwmmzwyemshrxamvu-auth-token');
       await logout();
       setIsOpen(false);

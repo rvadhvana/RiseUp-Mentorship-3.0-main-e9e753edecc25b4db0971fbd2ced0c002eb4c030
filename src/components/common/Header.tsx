@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Rocket, Building2, User } from 'lucide-react';
+import { Rocket} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { UserMenu } from './UserMenu';
 import { useAuth } from '../../context/AuthContext';
@@ -28,9 +28,9 @@ export function Header() {
   const { user, profile } = useAuth();
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
 console.log(user);
-  const displayName = profile ? 
-    `${profile.first_name} ${profile.last_name}` : 
-    'Loading...';
+  // const displayName = profile ? 
+  //   `${profile.first_name} ${profile.last_name}` : 
+  //   'Loading...';
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -41,6 +41,10 @@ console.log(user);
 
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    if (user) fetchProfile();
+  }, [user]);
 
   const fetchProfile = async () => {
     // Try to fetch organization profile
@@ -100,12 +104,12 @@ console.log(user);
           </div>
 
           <div className="flex items-center space-x-4">
-            {user && profile?.user_role === 'mentor' && (
+            {user && profile?.user_role === 'organization' && (
               <Link
-                to="/mentor/dashboard"
+                to="/organization/dashboard"
                 className="text-gray-600 hover:text-gray-900"
               >
-                Mentor Dashboard
+                Organization Dashboard
               </Link>
             )}
             

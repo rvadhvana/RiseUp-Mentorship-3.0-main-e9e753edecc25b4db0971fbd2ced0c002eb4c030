@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Calendar, Check } from 'lucide-react';
-import { useGoogleLogin } from '@react-oauth/google';
+//import { useGoogleLogin } from '@react-oauth/google';
 
 interface CalendarConnectProps {
   isConnected: boolean;

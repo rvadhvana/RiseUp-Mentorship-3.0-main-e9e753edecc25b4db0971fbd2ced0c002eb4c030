@@ -5,38 +5,37 @@ import {
   Instagram, 
   Link as LinkIcon, 
   Twitter,
-  Send,
-  Quote 
+  Send 
 } from 'lucide-react';
 import { supabase } from '../../utils/supabase';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
-interface Testimonial {
-  id: string;
-  name: string;
-  role: string;
-  message: string;
-  imageUrl: string;
-}
+// interface Testimonial {
+//   id: string;
+//   name: string;
+//   role: string;
+//   message: string;
+//   imageUrl: string;
+// }
 
 // Mock testimonials - In a real app, these would come from your backend
-const TESTIMONIALS: Testimonial[] = [
-  {
-    id: '1',
-    name: 'Sarah Johnson',
-    role: 'Software Engineer',
-    message: 'RiseUP Mentorship helped me transition from a junior to senior role. The mentorship I received was invaluable.',
-    imageUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200',
-  },
-  {
-    id: '2',
-    name: 'Michael Chen',
-    role: 'Product Manager',
-    message: 'The mentors here are truly exceptional. They provided practical insights that helped shape my career.',
-    imageUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=200',
-  },
-];
+// const TESTIMONIALS: Testimonial[] = [
+//   {
+//     id: '1',
+//     name: 'Sarah Johnson',
+//     role: 'Software Engineer',
+//     message: 'RiseUP Mentorship helped me transition from a junior to senior role. The mentorship I received was invaluable.',
+//     imageUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200',
+//   },
+//   {
+//     id: '2',
+//     name: 'Michael Chen',
+//     role: 'Product Manager',
+//     message: 'The mentors here are truly exceptional. They provided practical insights that helped shape my career.',
+//     imageUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=200',
+//   },
+// ];
 
 export function Footer() {
   const { user } = useAuth();

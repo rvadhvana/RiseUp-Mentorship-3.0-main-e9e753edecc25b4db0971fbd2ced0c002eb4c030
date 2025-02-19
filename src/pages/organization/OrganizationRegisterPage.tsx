@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Building2, ArrowLeft, Mail, Phone, MapPin, User, Lock, FileText } from 'lucide-react';
+import { Building2, ArrowLeft } from 'lucide-react';
 import { supabase } from '../../utils/supabase';
+import { Toast } from '../../components/ui/Toast';
 
 interface RegisterFormData {
   organizationName: string;
@@ -26,6 +27,8 @@ interface RegisterFormData {
 
 export function OrganizationRegisterPage() {
   const navigate = useNavigate();
+  const [, setIsSubmitting] = useState(false);
+  const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [error, setError] = useState('');
   const [formData, setFormData] = useState<RegisterFormData>({
     organizationName: '',
@@ -61,16 +64,19 @@ export function OrganizationRegisterPage() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    setToast(null);
     setError('');
 
     if (formData.adminPassword !== formData.confirmPassword) {
       setError('Passwords do not match');
+      setIsSubmitting(false);
       return;
     }
 
     try {
-      // First create the user
-      const { data: authData, error: authError } = await supabase.auth.signUp({
+      // First create the user account
+      const { data: userData, error: signUpError } = await supabase.auth.signUp({
         email: formData.contactEmail,
         password: formData.adminPassword,
         options: {
@@ -80,44 +86,55 @@ export function OrganizationRegisterPage() {
         }
       });
 
-      if (authError) throw authError;
-      if (!authData.user) throw new Error('User creation failed');
+      if (signUpError) throw signUpError;
+      if (!userData.user) throw new Error('User creation failed');
 
-      // Then create organization
+      // Then create the organization
       const { data: orgData, error: orgError } = await supabase
         .from('organizations')
-        .insert([{ 
-          name: formData.organizationName, 
-          email: formData.contactEmail, 
-          phone: formData.contactPhone, 
-          website: formData.website, 
-          description: formData.description 
+        .insert([{
+          name: formData.organizationName,
+          email: formData.contactEmail,
+          phone: formData.contactPhone,
+          website: formData.website,
+          description: formData.description
         }])
         .select()
         .single();
 
       if (orgError) throw orgError;
 
-      // Update profile with organization details
+      // Update the user's profile
       const { error: profileError } = await supabase
         .from('profiles')
-        .upsert([{
-          id: authData.user.id,
-          email: formData.contactEmail,
-          first_name: formData.organizationName,
+        .update({
           organization_id: orgData.id,
-          user_role: 'organization',
-          is_org_admin: true
-        }]);
+          is_organization_admin: true,
+          user_role: 'organization'
+        })
+        .eq('id', userData.user.id);
 
       if (profileError) throw profileError;
 
-      // Show success message
-      alert('Registration successful! Please check your email to verify your account before logging in.');
-      navigate('/login');
+      setToast({
+        type: 'success',
+        message: 'Registration successful! Please check your email to verify your account.'
+      });
+
+      // Redirect after a delay
+      setTimeout(() => {
+        navigate('/organization/login');
+      }, 2000);
+
     } catch (error: any) {
       console.error('Registration error:', error);
-      setError(error.message || 'An error occurred during registration');
+      setError(error.message || 'Registration failed. Please try again.');
+      setToast({
+        type: 'error',
+        message: 'Registration failed. Please try again.'
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -393,6 +410,13 @@ export function OrganizationRegisterPage() {
           </form>
         </div>
       </div>
+      {toast && (
+        <Toast
+          type={toast.type}
+          message={toast.message} onClose={function (): void {
+            throw new Error('Function not implemented.');
+          } }        />
+      )}
     </div>
   );
 } 
